@@ -1,0 +1,55 @@
+{
+    "name": "Health Connect",
+    "dockerComposeFile": "../docker-compose.yml",
+    "service": "app",
+    "workspaceFolder": "/usr/src/app",
+    "customizations": {
+      "vscode": {
+        "extensions": [
+          "ms-azuretools.vscode-docker",
+          "dbaeumer.vscode-eslint",
+          "esbenp.prettier-vscode",
+          "eamodio.gitlens",
+          "mhutchie.git-graph"
+        ],
+        "settings": {
+        "terminal.integrated.shell.linux": "/bin/bash",
+        "editor.formatOnSave": true,
+        "files.autoSave": "afterDelay",
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit"
+        }
+      }
+      }
+    },
+    "postCreateCommand": "npm install",
+    "portsAttributes": {
+      "7000": {
+        "label": "Backend API",
+        "onAutoForward": "openBrowser"
+      },
+      "5173": {
+        "label": "Frontend",
+        "onAutoForward": "openBrowser"
+      },
+      "3307": {
+        "label": "MySQL Database",
+        "onAutoForward": "notify"
+      }
+    },
+    "remoteEnv": {
+      "MYSQL_DATABASE": "${localEnv:MYSQL_DATABASE}",
+      "MYSQL_ROOT_PASSWORD": "${localEnv:MYSQL_ROOT_PASSWORD}",
+      "DB_USER": "${localEnv:DB_USER}",
+      "DB_PASSWORD": "${localEnv:DB_PASSWORD}",
+      "DB_NAME": "${localEnv:DB_NAME}",
+      "SECRETE": "${localEnv:SECRETE}",
+      "API_ACCESS_KEY": "${localEnv:API_ACCESS_KEY}"
+    },
+    "remoteUser": "root",
+    "mounts": [
+      "source=${localWorkspaceFolder}/backend,target=/usr/src/app,type=bind",
+      "source=${localWorkspaceFolder}/frontend,target=/health-connect,type=bind",
+      "source=${localWorkspaceFolder}/mysql/projectschema.sql,target=/docker-entrypoint-initdb.d/projectschema.sql,type=bind"
+    ]
+  }
