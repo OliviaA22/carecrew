@@ -1,9 +1,9 @@
 
-# HealthConnect: An Integrated Health Management App
+# MedAssist: An Integrated Health Management App
 
 ## Overview
 
-HealthConnect is a web (mobile) application designed to empower individuals to manage their health effectively. The app focuses on providing a seamless appointment booking experience with optional dial-in translation services to ensure users can communicate effectively with healthcare professionals.
+MedAssist is a web (mobile) application designed to empower nurses to manage their health effectively. The app focuses on providing a seamless appointment booking experience with optional dial-in translation services to ensure users can communicate effectively with healthcare professionals.
 
 ## Features
 
