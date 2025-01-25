@@ -13,8 +13,8 @@ module.exports = (sequelize, DataTypes) => {
       hospital_id: {
         type: DataTypes.INTEGER,
         references: {
-          model: 'hospital', // Table name for hospital
-          key: 'id', // Primary key in the hospital table
+          model: "hospital", // Table name for hospital
+          key: "id",
         },
         allowNull: false, // A patient must belong to a hospital
       },
@@ -46,6 +46,7 @@ module.exports = (sequelize, DataTypes) => {
       discharge_date: {
         type: DataTypes.DATEONLY,
         allowNull: true, // Can be null if the patient is not discharged yet
+        defaultValue: null,
       },
     },
     {

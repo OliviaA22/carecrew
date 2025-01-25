@@ -47,6 +47,16 @@ class AuthController {
   }
 
 
+    async getWards(req, res, next) {
+      try {
+        const nurses = await AuthService.getAllWards();
+        res.status(201).json(nurses);
+      } catch (error) {
+        next(error);
+      }
+    }
+
+
   async logout(req, res, next) {
     try {
       res

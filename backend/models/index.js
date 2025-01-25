@@ -38,15 +38,11 @@ db.Patient = require("./patient.js")(sequelize, DataTypes);
 db.Medication = require("./medication.js")(sequelize, DataTypes);
 db.MedicationPlan = require("./medication_plan.js")(sequelize, DataTypes);
 db.Documentation = require("./documentation.js")(sequelize, DataTypes);
-db.MedicationAdministration = require("./medication_administration.js")(
-  sequelize,
-  DataTypes
-);
+db.MedicationAdministration = require("./medication_administration.js")(sequelize, DataTypes);
 db.ShiftHandover = require("./shift_handover.js")(sequelize, DataTypes);
 db.Notification = require("./notification.js")(sequelize, DataTypes);
 
 // Define relationships
-
 db.User.belongsTo(db.Hospital, {
   foreignKey: "hospital_id",
 });
@@ -105,6 +101,14 @@ db.Ward.hasMany(db.Patient, {
 db.Patient.belongsTo(db.Ward, {
   foreignKey: "ward_id",
 });
+
+db.Ward.hasMany(db.User, {
+  foreignKey: "ward_id",
+});
+db.User.belongsTo(db.Ward, {
+  foreignKey: "ward_id",
+});
+
 
 // Patient Table Relationships
 db.Patient.hasMany(db.MedicationPlan, {
@@ -194,17 +198,10 @@ db.Patient.hasMany(db.Notification, {
   foreignKey: "patient_id",
 });
 
-// Nurse Ward Assignment Table Relationships
-db.Ward.belongsTo(db.User, {
-  foreignKey: "ward_id",
-});
-db.User.hasMany(db.Ward, {
-  foreignKey: "ward_id",
-});
-
-db.sequelize.sync({ force: false })
-.then(() => {})
-.catch((err) => {
-  console.log('Error: ' + err);
-});
+db.sequelize
+  .sync({ force: false })
+  .then(() => {})
+  .catch((err) => {
+    console.log("Error: " + err);
+  });
 module.exports = db;

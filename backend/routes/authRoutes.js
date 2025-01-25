@@ -7,6 +7,8 @@ authRouter.post('/register', authController.register);
 
 authRouter.post('/login', authController.login);
 
+authRouter.get('/wards', authController.getWards);
+
 authRouter.get('/check-auth', authController.checkAuth);
 
 authRouter.post('/logout', authController.logout);

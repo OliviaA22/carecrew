@@ -4,54 +4,26 @@ bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const User = db.User;
-const Specialization = db.Specialization;
-const Language = db.Language;
+const Ward = db.Ward;
 
 class AuthService {
-
   async register(data) {
+    data.email = data.email.toLowerCase();
     let user = await User.findOne({ where: { email: data.email } });
     if (user) {
-      throw new Error("email already exists");
+      throw new Error("Email already exists");
     }
-    data.email = data.email.toLowerCase();
     const hashedPassword = await bcrypt.hash(data.password, 10);
     data.password = hashedPassword;
 
-    // Extract address details from the request
-    const { postcode, street, city, state, country } = data.address;
-
-    // Create the address string
-    const addressString = `${postcode}, ${street}, ${city}, ${state}, ${country}`;
-
-    // Fetch geolocation data
-    const params = {
-      access_key: process.env.API_ACCESS_KEY,
-      query: addressString,
-    };
-
-    const geocodingResponse = await axios.get(
-      "http://api.positionstack.com/v1/forward",
-      { params }
-    );
-
-    const lat = geocodingResponse.data.data[0].latitude;
-    const lng = geocodingResponse.data.data[0].longitude;
-
-    const coordinates = {
-      type: "Point",
-      coordinates: [lng, lat], // Note: longitude comes before latitude
-    };
-    // Add the coordinates to the request data
-    data.location = coordinates;
+    const ward = await Ward.findByPk(data.ward_id);
+    if (!ward) {
+      throw new Error("Select a valid ward");
+    }
+    // Creating the user within a transaction to ensure data is saved correctly
+    // into all tables at once
     return await db.sequelize.transaction(async (t) => {
       user = await User.create(data, { transaction: t });
-
-      if (data.languages && data.languages.length > 0) {
-        // Assuming data.language is an array of language IDs
-        await user.setLanguages(data.languages, { transaction: t });
-      }
-
       return user;
     });
   }
@@ -64,8 +36,7 @@ class AuthService {
       },
       include: [
         {
-          model: Language,
-          through: { attributes: [] }, // This excludes the junction table attributes
+          model: Ward,
         },
       ],
     });
@@ -81,7 +52,7 @@ class AuthService {
         userId: user.dataValues.id,
         role: user.dataValues.role,
         address: user.address,
-        email:user.email,
+        email: user.email,
       },
       process.env.SECRETE,
       { expiresIn: "24h" }
@@ -92,6 +63,14 @@ class AuthService {
     };
   }
 
+
+  async getAllWards() {
+    const wards = await Ward.findAll();
+    return wards;
+  }
+
+
+
   async checkAuth(token) {
     if (!token) throw new Error("No token found");
 
@@ -100,8 +79,7 @@ class AuthService {
       attributes: ["id", "first_name", "last_name", "role", "email", "address"],
       include: [
         {
-          model: Language,
-          through: { attributes: [] },
+          model: Ward,
         },
       ],
     });
