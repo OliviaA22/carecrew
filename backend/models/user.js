@@ -2,26 +2,22 @@ module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(
     "user",
     {
-      title: {
-        type: DataTypes.STRING(15),
-      },
-      first_name: {
-        type: DataTypes.STRING(35),
-        allowNull: false,
-      },
-      last_name: {
-        type: DataTypes.STRING(35),
-        allowNull: false,
-      },
-      email: {
-        type: DataTypes.STRING(125),
-        allowNull: false,
-        unique: true
-      },
-      password: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
+      first_name: { 
+        type: DataTypes.STRING(50), 
+        allowNull: false },
+      last_name: { 
+        type: DataTypes.STRING(50), 
+        allowNull: false },
+      email: { 
+        type: DataTypes.STRING(100), 
+        unique: true, 
+        allowNull: false },
+      password: { 
+        type: DataTypes.STRING(255), 
+        allowNull: false },
+      role: { 
+        type: DataTypes.ENUM("nurse", "admin"), 
+        allowNull: false },
       date_of_birth: {
         type: DataTypes.DATE,
         allowNull: false,
@@ -31,37 +27,26 @@ module.exports = (sequelize, DataTypes) => {
       },
       gender: {
         type: DataTypes.STRING(15),
-      },      
-      insurance_type: {
-        type: DataTypes.STRING(25),
-        allowNull: false,
-        defaultValue: "public",
       },
-      address:{
+      address: {
         type: DataTypes.JSON,
         allowNull: false,
       },
-      location: {
-        type: DataTypes.GEOMETRY("POINT"),
-      },      
-      role: {
-        type: DataTypes.STRING(25),
-        allowNull: false,
-        defaultValue: "normal_user",
-      },
-      accessibility_needs: {
-        type: DataTypes.STRING(),
-        defaultValue: "none",
-      },
-      emergency_contact_details: {
-        type: DataTypes.JSON,
-      },
-      specialization_id: {
+      hospital_id: {
         type: DataTypes.INTEGER,
         references: {
-            model: 'specialization',
-            key: 'id'
-        }
+          model: "hospital",
+          key: "id",
+        },
+        allowNull: false,
+      },
+      ward_id: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: "ward",
+          key: "id",
+        },
+        allowNull: false, // A nurse must belong to a ward
       },
     },
     {

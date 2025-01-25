@@ -1,4 +1,4 @@
-require('dotenv').config();
+require("dotenv").config();
 
 const dbConfig = require("../config/db.js");
 
@@ -19,7 +19,7 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
 sequelize
   .authenticate()
   .then(() => {
-    console.log("connected..");
+    console.log("Database connected successfully..");
   })
   .catch((err) => {
     console.log("Error" + err);
@@ -31,78 +31,180 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 db.Op = Op;
 
-db.Specialization = require("./specialization.js")(sequelize, DataTypes);
+db.Hospital = require("./hospital.js")(sequelize, DataTypes);
 db.User = require("./user.js")(sequelize, DataTypes);
-db.UserLanguage = require("./user_language.js")(sequelize, DataTypes);
-
-db.Language = require("./language.js")(sequelize, DataTypes);
-
-db.Appointment = require("./appointment.js")(sequelize, DataTypes);
-db.Availability = require("./availability.js")(sequelize, DataTypes);
-
-db.Blog = require("./blog.js")(sequelize, DataTypes);
-
+db.Ward = require("./ward.js")(sequelize, DataTypes);
+db.Patient = require("./patient.js")(sequelize, DataTypes);
+db.Medication = require("./medication.js")(sequelize, DataTypes);
+db.MedicationPlan = require("./medication_plan.js")(sequelize, DataTypes);
+db.Documentation = require("./documentation.js")(sequelize, DataTypes);
+db.MedicationAdministration = require("./medication_administration.js")(
+  sequelize,
+  DataTypes
+);
+db.ShiftHandover = require("./shift_handover.js")(sequelize, DataTypes);
+db.Notification = require("./notification.js")(sequelize, DataTypes);
 
 // Define relationships
-db.Specialization.hasMany(db.User, {
-  foreignKey: 'specialization_id',
+
+db.User.belongsTo(db.Hospital, {
+  foreignKey: "hospital_id",
 });
-db.User.belongsTo(db.Specialization, {
-  foreignKey: 'specialization_id',
+db.Hospital.hasMany(db.User, {
+  foreignKey: "hospital_id",
 });
 
-
-db.User.belongsToMany(db.Language, {
-  through: "user_language",
-  foreignKey: "user_id",
-  otherKey: "language_id",
+db.User.hasMany(db.Notification, {
+  foreignKey: "nurse_id",
 });
-db.Language.belongsToMany(db.User, {
-  through: "user_language",
-  foreignKey: "language_id",
-  otherKey: "user_id",
+db.Notification.belongsTo(db.User, {
+  foreignKey: "nurse_id",
 });
 
-db.User.hasMany(db.Blog, {
+db.User.hasMany(db.Documentation, {
+  foreignKey: "nurse_id",
+});
+db.Documentation.belongsTo(db.User, {
+  foreignKey: "nurse_id",
+});
+
+db.User.hasMany(db.MedicationAdministration, {
+  foreignKey: "nurse_id",
+});
+db.MedicationAdministration.belongsTo(db.User, {
+  foreignKey: "nurse_id",
+});
+
+db.User.hasMany(db.MedicationPlan, {
   foreignKey: "created_by",
 });
-db.Blog.belongsTo(db.User, {
+db.MedicationPlan.belongsTo(db.User, {
   foreignKey: "created_by",
 });
 
-
-db.Appointment.belongsTo(db.Availability, {
-  foreignKey: 'availability_id',
-  as: 'availability',
+// Hospital Table Relationships
+db.Hospital.hasMany(db.Ward, {
+  foreignKey: "hospital_id",
 });
-db.Availability.hasOne(db.Appointment, {
-  foreignKey: "availability_id",
-});
-
-db.User.hasMany(db.Appointment, {
-  foreignKey: "user_id",
-});
-db.Appointment.belongsTo(db.User, {
-  foreignKey: "user_id",
-  as: 'patient',
+db.Ward.belongsTo(db.Hospital, {
+  foreignKey: "hospital_id",
 });
 
-db.User.hasMany(db.Appointment, {
-  foreignKey: "doctor_id",
+db.Hospital.hasMany(db.Patient, {
+  foreignKey: "hospital_id",
 });
-db.Appointment.belongsTo(db.User, {
-  foreignKey: "doctor_id",
-  as: 'doctor',
-});
-
-
-db.User.hasMany(db.Availability, {
-  foreignKey: "doctor_id",
-});
-db.Availability.belongsTo(db.User, {
-  foreignKey: "doctor_id",
+db.Patient.belongsTo(db.Hospital, {
+  foreignKey: "hospital_id",
 });
 
-db.sequelize.sync({ force: false }).then(() => {});
+// Ward Table Relationships
 
+db.Ward.hasMany(db.Patient, {
+  foreignKey: "ward_id",
+});
+db.Patient.belongsTo(db.Ward, {
+  foreignKey: "ward_id",
+});
+
+// Patient Table Relationships
+db.Patient.hasMany(db.MedicationPlan, {
+  foreignKey: "patient_id",
+});
+db.MedicationPlan.belongsTo(db.Patient, {
+  foreignKey: "patient_id",
+});
+
+db.Patient.hasMany(db.Documentation, {
+  foreignKey: "patient_id",
+});
+db.Documentation.belongsTo(db.Patient, {
+  foreignKey: "patient_id",
+});
+
+// db.Patient.hasMany(db.ShiftHandover, {
+//   foreignKey: 'patient_id',
+// });
+// db.ShiftHandover.belongsTo(db.Patient, {
+//   foreignKey: 'patient_id',
+// });
+
+db.Patient.hasMany(db.MedicationAdministration, {
+  foreignKey: "patient_id",
+});
+db.MedicationAdministration.belongsTo(db.Patient, {
+  foreignKey: "patient_id",
+});
+
+// Medication Plan Table Relationships
+db.MedicationPlan.belongsTo(db.Patient, {
+  foreignKey: "patient_id",
+});
+db.Patient.hasMany(db.MedicationPlan, {
+  foreignKey: "patient_id",
+});
+
+db.MedicationPlan.belongsTo(db.Medication, {
+  foreignKey: "medication_id",
+});
+db.Medication.hasMany(db.MedicationPlan, {
+  foreignKey: "medication_id",
+});
+
+db.MedicationPlan.belongsTo(db.User, {
+  foreignKey: "created_by",
+});
+db.User.hasMany(db.MedicationPlan, {
+  foreignKey: "created_by",
+});
+
+// Medication Table Relationships
+db.Medication.hasMany(db.MedicationAdministration, {
+  foreignKey: "medication_id",
+});
+db.MedicationAdministration.belongsTo(db.Medication, {
+  foreignKey: "medication_id",
+});
+
+// Shift Handover Table Relationships
+
+db.ShiftHandover.belongsTo(db.User, {
+  as: "outgoing",
+  foreignKey: "from_nurse_id",
+});
+db.User.hasMany(db.ShiftHandover, {
+  as: "outgoing",
+  foreignKey: "from_nurse_id",
+});
+
+db.ShiftHandover.belongsTo(db.User, {
+  as: "incoming",
+  foreignKey: "to_nurse_id",
+});
+db.User.hasMany(db.ShiftHandover, {
+  as: "incoming",
+  foreignKey: "to_nurse_id",
+});
+
+// Notification Table Relationships
+
+db.Notification.belongsTo(db.Patient, {
+  foreignKey: "patient_id",
+});
+db.Patient.hasMany(db.Notification, {
+  foreignKey: "patient_id",
+});
+
+// Nurse Ward Assignment Table Relationships
+db.Ward.belongsTo(db.User, {
+  foreignKey: "ward_id",
+});
+db.User.hasMany(db.Ward, {
+  foreignKey: "ward_id",
+});
+
+db.sequelize.sync({ force: false })
+.then(() => {})
+.catch((err) => {
+  console.log('Error: ' + err);
+});
 module.exports = db;
