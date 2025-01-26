@@ -25,15 +25,15 @@ export default defineConfig({
   server: {
     port: 5173, // This should match the port you are trying to access
     open: true, // Automatically opens the browser
-    proxy: {
-      "/api": {
-        target: isDocker
-          ? "http://server-app:7000"
-          : "https://health-connect-kyp7.onrender.com",
-        changeOrigin: true,
-        secure: false, // Set to true if the target server uses a valid SSL certificate
-        rewrite: (path) => path.replace(/^\/api/, ""),
-      },
-    },
-  },
+//    proxy: {
+//      "/api": {
+//        target: isDocker
+//          ? "http://server-app:7000"
+ //         : "https://health-connect-kyp7.onrender.com",
+//        changeOrigin: true,
+  //      secure: false, // Set to true if the target server uses a valid SSL certificate
+    //    rewrite: (path) => path.replace(/^\/api/, ""),
+  //    },
+  //  },
+ },
 });

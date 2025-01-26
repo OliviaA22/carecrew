@@ -1,9 +1,4 @@
 import React from "react";
-import { FaFacebookSquare } from "react-icons/fa";
-import { FaSquareWhatsapp } from "react-icons/fa6";
-import { RiTwitterXFill } from "react-icons/ri";
-import { IoLogoYoutube } from "react-icons/io5";
-import { FaInstagram } from "react-icons/fa";
 
 const Footer: React.FC = () => {
   return (
@@ -54,13 +49,6 @@ const Footer: React.FC = () => {
             <span className="font-semibold">Language:</span>
             <span>English</span>
           </div>
-        </div>
-        <div className="flex text-2xl hover:cursor-pointer text-blue-500 flex-row gap-4">
-          <FaFacebookSquare />
-          <FaSquareWhatsapp />
-          <RiTwitterXFill />
-          <IoLogoYoutube />
-          <FaInstagram />
         </div>
       </div>
     </div>
