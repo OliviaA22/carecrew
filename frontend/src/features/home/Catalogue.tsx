@@ -14,7 +14,7 @@ const Catalogue: React.FC = () => {
               Are you a doctor or therapist?
             </h1>
             <h1 className="font-medium inter">
-              Simple appointment management for a successful practice.
+              Simple medication administration for a successful practice.
             </h1>
           </div>
           <div className="flex flex-col gap-1">

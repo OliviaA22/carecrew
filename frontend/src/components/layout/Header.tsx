@@ -1,7 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { GoQuestion } from "react-icons/go";
 
 const Header: React.FC = () => {
   const [help, setHelp] = useState<boolean>(false);
@@ -17,7 +16,7 @@ const Header: React.FC = () => {
           to="/"
           className="z-10 flex flex-row items-center inter text-white font-medium text-2xl"
         >
-          <h1>Health Connect</h1>
+          <h1>CareCrew</h1>
         </Link>
         {help && (
           <div
@@ -30,7 +29,6 @@ const Header: React.FC = () => {
             onClick={toggle}
             className="flex transition duration-300 ease-in pb-2 hover:cursor-pointer hover:bg-[#f1f1f1aa] p-2 py-1 rounded-lg z-10 items-center gap-1"
           >
-            <GoQuestion color="white" />
             <div className="text-white text-sm inter">Help center</div>
           </div>
           {help && <Help />}
@@ -39,19 +37,13 @@ const Header: React.FC = () => {
               to="/signup"
               className="z-10 text-white transition duration-300 ease-in pb-2 hover:cursor-pointer hover:bg-[#f1f1f1aa] p-2 py-1 rounded-lg text-sm inter"
             >
-              Register
+              Book a demo
             </Link>
             <Link
               to="/signin"
               className="z-10 text-white transition duration-300 ease-in pb-2 hover:cursor-pointer hover:bg-[#f1f1f1aa] p-2 py-1 rounded-lg text-sm inter"
             >
               Sign in
-            </Link>
-            <Link
-              to="/admindashboard"
-              className="z-10 text-white transition duration-300 ease-in pb-2 hover:cursor-pointer hover:bg-[#f1f1f1aa] p-2 py-1 rounded-lg text-sm inter"
-            >
-              Admin
             </Link>
           </div>
         </div>

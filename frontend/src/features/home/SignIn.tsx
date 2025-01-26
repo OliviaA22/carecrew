@@ -1,92 +1,83 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AdminHeader from "../../components/layout/adminHeader";
-import axiosInstance from "../../axios/Axios";
-import PatientForm, {
-  FormData,
-} from "../../components/patientModal/PatientForm";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const SignUp: React.FC = () => {
   const navigate = useNavigate();
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedTime, setSelectedTime] = useState<Date | null>(null);
 
-  const handleSubmit = async (formData: FormData) => {
-    try {
-      const postData = {
-        title: formData.title,
-        first_name: formData.first_name,
-        last_name: formData.last_name,
-        email: formData.email,
-        password: formData.password, // Make sure this is included in your FormData
-        date_of_birth: formData.date_of_birth
-          ? formData.date_of_birth.toISOString().split("T")[0]
-          : null,
-        phone_number: formData.phone_number,
-        gender: formData.gender, // Make sure this is included in your FormData
-        insurance_type: formData.insurance_type || "public",
-        address: {
-          street: formData.address.street,
-          postcode: formData.address.postcode,
-          city: formData.address.city,
-          state: formData.address.state,
-          country: formData.address.country,
-        },
-        accessibility_needs: formData.accessibility_needs || "none",
-        emergency_contact_details: formData.emergency_contact_details || null,
-        language: formData.languages.values,
-      };
-
-      const token = localStorage.getItem("token");
-
-      const response = await axiosInstance.post(
-        "/api/auth/register",
-        postData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-          },
-        }
+  const handleBookAppointment = () => {
+    if (selectedDate && selectedTime) {
+      // Google-style confirmation
+      const confirmed = window.confirm(
+        `Confirm appointment on ${selectedDate.toLocaleDateString()} at ${selectedTime.toLocaleTimeString()}?`
       );
 
-      navigate("/signin");
-    } catch (error: any) {
-      console.error("Registration error:", error);
-      if (error.response) {
-        console.error("Response data:", error.response.data);
-        console.error("Response status:", error.response.status);
-        console.error("Response headers:", error.response.headers);
-        alert(
-          `Registration failed: ${
-            error.response.data.error ||
-            error.response.data.message ||
-            error.message
-          }`
-        );
-      } else if (error.request) {
-        console.error("No response received:", error.request);
-        alert("Registration failed: No response received from server");
-      } else {
-        console.error("Error message:", error.message);
-        alert(`Registration failed: ${error.message}`);
+      if (confirmed) {
+        // Simulating Google's booking confirmation
+        alert("Demo booked successfully!");
+        navigate("/");
       }
+    } else {
+      alert("Please select date and time");
     }
   };
 
-  const handleClose = () => {
-    // Navigate back or to home page
-    navigate("/");
-  };
-
   return (
-    <div className="min-h-screen w-full bg-blue-50">
-      <AdminHeader text={""} />
-      <div className="container mx-auto px-4 py-10 flex justify-center items-center">
-        <div className="w-full max-w-3xl bg-white rounded-2xl px-8 py-10 shadow-custom">
-          <h1 className="text-center text-blue-600 font-semibold text-3xl mb-8">
-            Register
-          </h1>
-          <PatientForm handleSubmit={handleSubmit} onClose={handleClose} />
+    <div className="max-w-md mx-auto p-6 bg-white shadow-md rounded-lg">
+      <div className="text-center mb-6">
+        <h1 className="text-2xl font-bold text-blue-600">
+          Book an Appointment for a Demo
+        </h1>
+        <p className="text-gray-500">Select your preferred date and time</p>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Date
+          </label>
+          <DatePicker
+            selected={selectedDate}
+            onChange={(date: Date) => setSelectedDate(date)}
+            minDate={new Date()}
+            className="w-full p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+            placeholderText="Choose a date"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Time
+          </label>
+          <DatePicker
+            selected={selectedTime}
+            onChange={(time: Date) => setSelectedTime(time)}
+            showTimeSelect
+            showTimeSelectOnly
+            timeIntervals={30}
+            timeCaption="Time"
+            dateFormat="h:mm aa"
+            className="w-full p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+            placeholderText="Choose a time"
+          />
+        </div>
+
+        <div className="flex justify-between">
+          <button
+            onClick={() => navigate("/")}
+            className="text-blue-600 hover:bg-blue-50 px-4 py-2 rounded"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleBookAppointment}
+            className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+          >
+            Book demo
+          </button>
         </div>
       </div>
     </div>
