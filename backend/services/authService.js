@@ -64,11 +64,6 @@ class AuthService {
   }
 
 
-  async getAllWards() {
-    const wards = await Ward.findAll();
-    return wards;
-  }
-
 
 
   async checkAuth(token) {

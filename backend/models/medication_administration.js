@@ -2,10 +2,10 @@ module.exports = (sequelize, DataTypes) => {
   const MedicationAdministration = sequelize.define(
     "medication_administration",
     {
-      medication_id: {
+      med_item_id: {
         type: DataTypes.INTEGER,
         references: { 
-          model: 'medication', 
+          model: 'medication_item', 
           key: 'id' 
         },
         allowNull: false,
@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         allowNull: false,
       },
-      nurse_id: {
+      administered_by: {
         type: DataTypes.INTEGER,
         references: { 
           model: 'user', 

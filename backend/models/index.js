@@ -36,10 +36,11 @@ db.User = require("./user.js")(sequelize, DataTypes);
 db.Ward = require("./ward.js")(sequelize, DataTypes);
 db.Patient = require("./patient.js")(sequelize, DataTypes);
 db.Medication = require("./medication.js")(sequelize, DataTypes);
+db.MedicationItem = require("./medication_item.js")(sequelize, DataTypes);
 db.MedicationPlan = require("./medication_plan.js")(sequelize, DataTypes);
 db.Documentation = require("./documentation.js")(sequelize, DataTypes);
 db.MedicationAdministration = require("./medication_administration.js")(sequelize, DataTypes);
-db.ShiftHandover = require("./shift_handover.js")(sequelize, DataTypes);
+db.Shift = require("./shift.js")(sequelize, DataTypes);
 db.Notification = require("./notification.js")(sequelize, DataTypes);
 
 // Define relationships
@@ -65,10 +66,10 @@ db.Documentation.belongsTo(db.User, {
 });
 
 db.User.hasMany(db.MedicationAdministration, {
-  foreignKey: "nurse_id",
+  foreignKey: "administered_by",
 });
 db.MedicationAdministration.belongsTo(db.User, {
-  foreignKey: "nurse_id",
+  foreignKey: "administered_by",
 });
 
 db.User.hasMany(db.MedicationPlan, {
@@ -125,13 +126,6 @@ db.Documentation.belongsTo(db.Patient, {
   foreignKey: "patient_id",
 });
 
-// db.Patient.hasMany(db.ShiftHandover, {
-//   foreignKey: 'patient_id',
-// });
-// db.ShiftHandover.belongsTo(db.Patient, {
-//   foreignKey: 'patient_id',
-// });
-
 db.Patient.hasMany(db.MedicationAdministration, {
   foreignKey: "patient_id",
 });
@@ -139,13 +133,9 @@ db.MedicationAdministration.belongsTo(db.Patient, {
   foreignKey: "patient_id",
 });
 
+
+
 // Medication Plan Table Relationships
-db.MedicationPlan.belongsTo(db.Patient, {
-  foreignKey: "patient_id",
-});
-db.Patient.hasMany(db.MedicationPlan, {
-  foreignKey: "patient_id",
-});
 
 db.MedicationPlan.belongsTo(db.Medication, {
   foreignKey: "medication_id",
@@ -162,31 +152,42 @@ db.User.hasMany(db.MedicationPlan, {
 });
 
 // Medication Table Relationships
-db.Medication.hasMany(db.MedicationAdministration, {
-  foreignKey: "medication_id",
+db.MedicationItem.hasMany(db.MedicationAdministration, {
+  foreignKey: "med_item_id",
 });
-db.MedicationAdministration.belongsTo(db.Medication, {
-  foreignKey: "medication_id",
+db.MedicationAdministration.belongsTo(db.MedicationItem, {
+  foreignKey: "med_item_id",
 });
 
 // Shift Handover Table Relationships
-
-db.ShiftHandover.belongsTo(db.User, {
-  as: "outgoing",
-  foreignKey: "from_nurse_id",
+db.Shift.belongsTo(db.User, {
+  foreignKey: "nurse_id",
 });
-db.User.hasMany(db.ShiftHandover, {
-  as: "outgoing",
-  foreignKey: "from_nurse_id",
+db.User.hasMany(db.Shift, {
+  foreignKey: "nurse_id",
 });
 
-db.ShiftHandover.belongsTo(db.User, {
-  as: "incoming",
-  foreignKey: "to_nurse_id",
+
+//Medication Item Table Relationships
+db.MedicationItem.belongsTo(db.Medication, {
+  foreignKey: "medication_id",
 });
-db.User.hasMany(db.ShiftHandover, {
-  as: "incoming",
-  foreignKey: "to_nurse_id",
+db.Medication.hasMany(db.MedicationItem, {
+  foreignKey: "medication_id",
+});
+
+db.MedicationItem.belongsTo(db.MedicationPlan, {
+  foreignKey: 'plan_id',
+});
+db.MedicationPlan.hasMany(db.MedicationItem, {
+  foreignKey: 'plan_id',
+});
+
+db.MedicationPlan.belongsTo(db.Patient, {
+  foreignKey: 'patient_id',
+});
+db.Patient.hasMany(db.MedicationPlan, {
+  foreignKey: 'patient_id',
 });
 
 // Notification Table Relationships

@@ -3,14 +3,13 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 
-// const db = require('./models'); // Import the db object
 
 const userRoutes = require("./routes/userRoutes.js");
 const authRoutes = require("./routes/authRoutes.js");
 // const blogRoutes = require("./routes/blogRoutes.js");
 // const appointmentRoutes = require("./routes/appointmentRoutes.js");
 const patientRoutes = require("./routes/patientRoutes.js");
-// const dashboardRoutes = require("./routes/dashboardRoutes.js")
+const dashboardRoutes = require("./routes/dashboardRoutes.js")
 const errorHandler = require("./middleware/errorHandler");
 const cookieParser = require("cookie-parser");
 
@@ -55,7 +54,7 @@ app.use("/api/patients", patientRoutes);
 
 // app.use("/api/appointments", appointmentRoutes);
 
-// app.use("/api/search", dashboardRoutes)
+app.use("/api/search", dashboardRoutes)
 
 
 app.use(errorHandler);

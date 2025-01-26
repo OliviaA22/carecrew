@@ -2,11 +2,6 @@ module.exports = (sequelize, DataTypes) => {
   const Notification = sequelize.define(
     "notification",
     {
-      language_name: {
-        type: DataTypes.STRING(55),
-        allowNull: false,
-      },
-
       nurse_id: {
         type: DataTypes.INTEGER,
         references: {

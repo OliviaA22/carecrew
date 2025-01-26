@@ -2,7 +2,7 @@ const express = require("express");
 const userRouter = express.Router();
 const userController = require("../controllers/userController");
 
-const { isLoggedIn } = require("../middleware/isLoggedIn");
+const isLoggedIn  = require("../middleware/isLoggedIn");
 const { roleCheck } = require("../middleware/roleCheck");
 
 

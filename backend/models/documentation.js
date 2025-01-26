@@ -24,10 +24,6 @@ module.exports = (sequelize, DataTypes) => {
             },
             allowNull: false,
           },
-          notes: {
-            type: DataTypes.TEXT,
-            allowNull: false, // Notes entered by the nurse
-          },
           category: {
             type: DataTypes.ENUM('observation', 'incident', 'care plan'),
             allowNull: false, // Type of note
