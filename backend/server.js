@@ -3,11 +3,12 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 
+require("./jobs/notificationsJob.js"); // Initialize cron jobs
 
 const userRoutes = require("./routes/userRoutes.js");
 const authRoutes = require("./routes/authRoutes.js");
-// const blogRoutes = require("./routes/blogRoutes.js");
-// const appointmentRoutes = require("./routes/appointmentRoutes.js");
+const medicationPlanRoutes = require("./routes/medicationPlanRoutes.js");
+const notificationRoutes = require("./routes/notificationRoutes.js");
 const patientRoutes = require("./routes/patientRoutes.js");
 const dashboardRoutes = require("./routes/dashboardRoutes.js")
 const errorHandler = require("./middleware/errorHandler");
@@ -46,13 +47,13 @@ app.use(cookieParser());
 
 app.use("/api/users", userRoutes);
 
-// app.use("/api/blogs", blogRoutes);
+app.use("/api/med-plans", medicationPlanRoutes);
 
 app.use("/api/auth", authRoutes);
 
 app.use("/api/patients", patientRoutes);
 
-// app.use("/api/appointments", appointmentRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 app.use("/api/search", dashboardRoutes)
 
