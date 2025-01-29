@@ -1,14 +1,14 @@
 
 FROM node:22-alpine3.19
 
-WORKDIR /server-app
+# WORKDIR /server-app
 
-COPY package*.json ./
+# COPY package*.json ./
 
-RUN npm install
+# RUN npm install
 
-COPY . .
+# COPY . .
 
-EXPOSE 7000
+# EXPOSE 7000
 
-CMD ["npm", "start"]
+# CMD ["npm", "start"]
