@@ -1,18 +1,18 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { AuthProvider } from "./components/auth/AuthContext";
-import PrivateRoute from "./components/auth/PrivateRoute";
+import { AuthProvider } from "./pages/LogIn/AuthContext";
+import PrivateRoute from "./pages/LogIn/PrivateRoute";
 
 import "vite/modulepreload-polyfill";
-import ManageAppointments from "./features/admin/manageAppointments";
-import ManageDoctors from "./features/admin/manageDoctors";
-import ManagePatients from "./features/admin/managePatients";
-import AdminDashboard from "./features/admin/adminDashboard";
-import Home from "./features/home/Home";
-import SignUp from "./features/home/SignIn";
-import SignIn from "./features/home/LoginIn";
-import DoctorDashboard from "./features/doctor/doctorDashboard";
-import PatientDashboard from "./features/patient/patientDashboard";
+import ManageAppointments from "./pages/Admin/manageAppointments";
+import ManageDoctors from "./pages/Admin/manageDoctors";
+import ManagePatients from "./pages/Admin/managePatients";
+import AdminDashboard from "./pages/Admin/adminDashboard";
+import Home from "./pages/Home/Home";
+import SignUp from "./pages/Home/SignIn";
+import SignIn from "./pages/LogIn/LoginIn";
+import NurseDashboard from "./pages/Nurse/nurseDashboard";
+import PatientDetails from "./pages/Patient/PatientDetail";
 
 const App = () => {
   return (
@@ -32,20 +32,20 @@ const App = () => {
             }
           />
           <Route
-            path="/patientdashboard"
+            path="/details"
             element={
               <PrivateRoute
-                element={<PatientDashboard />}
-                requiredRoles={["normal_user"]}
+                element={<PatientDetails />}
+                requiredRoles={["nurse"]}
               />
             }
           />
           <Route
-            path="/doctordashboard"
+            path="/nursedashboard"
             element={
               <PrivateRoute
-                element={<DoctorDashboard />}
-                requiredRoles={["doctor"]}
+                element={<NurseDashboard />}
+                requiredRoles={["nurse"]}
               />
             }
           />

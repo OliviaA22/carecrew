@@ -42,7 +42,7 @@ axiosInstance.interceptors.response.use(
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         // Handle authentication failure by redirecting to the root path
-        window.location.href = "/";
+        window.location.href = "/details";
         // Reject the promise with the refresh error
         return Promise.reject(refreshError);
       }
