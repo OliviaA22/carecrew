@@ -18,6 +18,10 @@ module.exports = (sequelize, DataTypes) => {
         },
         allowNull: false, // A patient must belong to a hospital
       },
+      room_no: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
       first_name: {
         type: DataTypes.STRING(50),
         allowNull: false,
