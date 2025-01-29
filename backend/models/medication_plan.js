@@ -29,10 +29,6 @@ module.exports = (sequelize, DataTypes) => {
       valid_until: {
         type: DataTypes.DATEONLY,
       }, // End date (nullable for ongoing plans)
-      status: {
-        type: DataTypes.ENUM("active", "completed", "missed"),
-        defaultValue: "active",
-      },
       additional_notes: { type: DataTypes.TEXT }, // General notes for the plan
     },
     {

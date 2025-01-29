@@ -137,13 +137,6 @@ db.MedicationAdministration.belongsTo(db.Patient, {
 
 // Medication Plan Table Relationships
 
-db.MedicationPlan.belongsTo(db.Medication, {
-  foreignKey: "medication_id",
-});
-db.Medication.hasMany(db.MedicationPlan, {
-  foreignKey: "medication_id",
-});
-
 db.MedicationPlan.belongsTo(db.User, {
   foreignKey: "created_by",
 });
@@ -198,6 +191,15 @@ db.Notification.belongsTo(db.Patient, {
 db.Patient.hasMany(db.Notification, {
   foreignKey: "patient_id",
 });
+
+db.Notification.belongsTo(db.MedicationItem, { 
+  foreignKey: "medication_item_id" 
+});
+db.MedicationItem.hasMany(db.Notification, { 
+  foreignKey: "medication_item_id" 
+});
+
+
 
 db.sequelize
   .sync({ force: false })

@@ -17,6 +17,13 @@ module.exports = (sequelize, DataTypes) => {
           key: "id",
         },
       },
+      medication_item_id: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: "medication_item",
+          key: "id",
+        },
+      },
       notification_type: {
         type: DataTypes.ENUM("task", "reminder", "alert"),
       },

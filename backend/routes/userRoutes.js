@@ -7,9 +7,9 @@ const { roleCheck } = require("../middleware/roleCheck");
 
 
 
-userRouter.get('/', isLoggedIn, userController.getNurses);
+userRouter.get('/', isLoggedIn,roleCheck('admin'),userController.getNurses);
 
-userRouter.post('/nurse', userController.createUser);
+userRouter.post('/nurse', roleCheck('admin'), userController.createUser);
 
 // userRouter.post('/admin-create', isLoggedIn, roleCheck('admin'), userController.createUser);
 
@@ -21,7 +21,7 @@ userRouter.post('/nurse', userController.createUser);
 
 userRouter.get('/:id', isLoggedIn, userController.getUserById);
 
-userRouter.put('/:id', isLoggedIn, userController.updateUser);
+userRouter.put('/:id', isLoggedIn, roleCheck('admin'), userController.updateUser);
 
 userRouter.delete('/:id', isLoggedIn, roleCheck('admin'), userController.deleteUser);
 

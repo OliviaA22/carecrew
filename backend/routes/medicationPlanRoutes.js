@@ -6,7 +6,7 @@ const isLoggedIn  = require("../middleware/isLoggedIn");
 const { roleCheck } = require("../middleware/roleCheck");
 
 
-medicationPlanRouter.get('/', MedicationPlanController.getAllMedPlans);
+medicationPlanRouter.get('/', isLoggedIn, MedicationPlanController.getAllMedPlans);
 
 medicationPlanRouter.post('/new-plan', isLoggedIn, roleCheck('admin'), MedicationPlanController.createMedPlan);
 

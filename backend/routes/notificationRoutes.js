@@ -9,7 +9,7 @@ const { roleCheck } = require("../middleware/roleCheck");
 const {authenticateUser} = require("../middleware/authUser");
 // notificationRouter.post("/generate-due", NotificationController.generateDueMedicationNotifications);
 
-notificationRouter.get("/ward", authenticateUser, NotificationController.getWardNotifications);
+notificationRouter.get("/ward", isLoggedIn, authenticateUser, NotificationController.getWardNotifications);
 
 // notificationRouter.get("/patient/:patientId", NotificationController.getNotificationsForPatient);
 

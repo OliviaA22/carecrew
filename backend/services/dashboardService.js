@@ -42,7 +42,6 @@ class DashboardService {
     // Fetch assigned patients along with their medication plans and medication items
     const assignedPatients = await Patient.findAll({
       where: { ward_id: nurse.ward_id },
-      // attributes: ["id", "first_name", "last_name", "ward_id"], // Specify required attributes
       include: [
         {
           model: MedicationPlan,
