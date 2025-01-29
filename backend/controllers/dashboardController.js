@@ -21,6 +21,22 @@ class DashboardController {
     }
   }
 
+    /**
+   * Fetch dashboard data for the logged-in nurse.
+   * @param {Request} req - Express request object.
+   * @param {Response} res - Express response object.
+   * @param {Function} next - Express next middleware function.
+   */
+    async getDashboardData(req, res, next) {
+      try {
+        const dashboardData = await DashbordService.getDashboardData(req.user.id);
+        res.status(200).json(dashboardData);
+      } catch (error) {
+        next(error);
+      }
+    }
+
+
 }
 
 module.exports = new DashboardController();

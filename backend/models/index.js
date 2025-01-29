@@ -51,13 +51,6 @@ db.Hospital.hasMany(db.User, {
   foreignKey: "hospital_id",
 });
 
-db.User.hasMany(db.Notification, {
-  foreignKey: "nurse_id",
-});
-db.Notification.belongsTo(db.User, {
-  foreignKey: "nurse_id",
-});
-
 db.User.hasMany(db.Documentation, {
   foreignKey: "nurse_id",
 });
@@ -107,6 +100,13 @@ db.Ward.hasMany(db.User, {
   foreignKey: "ward_id",
 });
 db.User.belongsTo(db.Ward, {
+  foreignKey: "ward_id",
+});
+
+db.Ward.hasMany(db.Notification, {
+  foreignKey: "ward_id",
+});
+db.Notification.belongsTo(db.Ward, {
   foreignKey: "ward_id",
 });
 

@@ -2,10 +2,10 @@ module.exports = (sequelize, DataTypes) => {
   const Notification = sequelize.define(
     "notification",
     {
-      nurse_id: {
+      ward_id: {
         type: DataTypes.INTEGER,
         references: {
-          model: "user",
+          model: "ward",
           key: "id",
         },
         allowNull: false,

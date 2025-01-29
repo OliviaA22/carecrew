@@ -23,14 +23,7 @@ class AuthController {
           expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
         })
         .status(201)
-        .json({
-          userId: user.id,
-          first_name: user.first_name,
-          last_name: user.last_name,
-          role: user.role,
-          email: user.email,
-          address: user.address,
-        });
+        .json({user, token});
     } catch (error) {
       next(error);
     }

@@ -52,6 +52,7 @@ class AuthService {
         userId: user.dataValues.id,
         role: user.dataValues.role,
         address: user.address,
+        ward_id: user.dataValues.ward_id, 
         email: user.email,
       },
       process.env.SECRETE,
@@ -71,7 +72,7 @@ class AuthService {
 
     const decoded = jwt.verify(token, process.env.SECRETE);
     const user = await User.findByPk(decoded.userId, {
-      attributes: ["id", "first_name", "last_name", "role", "email", "address"],
+      attributes: ["id", "first_name", "last_name", "role", "ward_id", "email", "address"],
       include: [
         {
           model: Ward,

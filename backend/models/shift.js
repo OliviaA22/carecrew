@@ -16,10 +16,10 @@ module.exports = (sequelize, DataTypes) => {
       },
       end_time: {
         type: DataTypes.DATE,
-      }, // When medication ends (nullable for ongoing shifts)
+      },
       status: {
-        type: DataTypes.ENUM("pending", "in progress", "completed"),
-        defaultValue: "pending",
+        type: DataTypes.ENUM("in progress", "completed"),
+        defaultValue: "in progress",
       },
       notes: {
         type: DataTypes.TEXT,

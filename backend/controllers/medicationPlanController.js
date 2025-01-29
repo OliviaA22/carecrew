@@ -14,15 +14,37 @@ class MedicationPlanController {
     }
   }
 
-  // async getMedicationsForShift(req, res, next) {
-  //   try {
-  //     const { patient_id } = req.params;
-  //     const medications = await MedicationPlanService.getMedicationsForShift(patient_id);
-  //     res.status(200).json(medications);
-  //   } catch (error) {
-  //     next(error);
-  //   }
-  // }
+    /**
+   * Update the status of a specific medication item.
+   * @param {Request} req - Express request object.
+   * @param {Response} res - Express response object.
+   * @param {Function} next - Express next middleware function.
+   */
+    async updateMedicationStatus(req, res, next) {
+      try {
+        const { status, notes } = req.body;
+        const updatedMed = await MedicationPlanService.updateMedicationStatus(req.params.id, status, notes);
+        res.status(200).json(updatedMed);
+      } catch (error) {
+        next(error);
+      }
+    }
+  
+    /**
+     * Log a medication administration record.
+     * @param {Request} req - Express request object.
+     * @param {Response} res - Express response object.
+     * @param {Function} next - Express next middleware function.
+     */
+    async logMedicationAdministration(req, res, next) {
+      try {
+        const logData = req.body;
+        const log = await MedicationPlanService.logMedicationAdministration(logData);
+        res.status(201).json(log);
+      } catch (error) {
+        next(error);
+      }
+    }
 
   async getAllMedPlans(req, res, next) {
     try {
@@ -77,3 +99,54 @@ class MedicationPlanController {
 }
 
 module.exports = new MedicationPlanController();
+
+
+// class MedicationController {
+//   /**
+//    * Retrieve the active medication plan for a given patient.
+//    * @param {Request} req - Express request object.
+//    * @param {Response} res - Express response object.
+//    * @param {Function} next - Express next middleware function.
+//    */
+//   async getMedicationPlan(req, res, next) {
+//     try {
+//       const plan = await MedicationService.getMedicationPlan(req.params.patientId);
+//       res.status(200).json(plan);
+//     } catch (error) {
+//       next(error);
+//     }
+//   }
+
+//   /**
+//    * Update the status of a specific medication item.
+//    * @param {Request} req - Express request object.
+//    * @param {Response} res - Express response object.
+//    * @param {Function} next - Express next middleware function.
+//    */
+//   async updateMedicationStatus(req, res, next) {
+//     try {
+//       const { id } = req.params; // Medication item ID
+//       const { status, notes } = req.body;
+//       const updatedMed = await MedicationService.updateMedicationStatus(id, status, notes);
+//       res.status(200).json(updatedMed);
+//     } catch (error) {
+//       next(error);
+//     }
+//   }
+
+//   /**
+//    * Log a medication administration record.
+//    * @param {Request} req - Express request object.
+//    * @param {Response} res - Express response object.
+//    * @param {Function} next - Express next middleware function.
+//    */
+//   async logMedicationAdministration(req, res, next) {
+//     try {
+//       const logData = req.body;
+//       const log = await MedicationService.logMedicationAdministration(logData);
+//       res.status(201).json(log);
+//     } catch (error) {
+//       next(error);
+//     }
+//   }
+// }

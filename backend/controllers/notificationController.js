@@ -1,56 +1,40 @@
-const NotificationService = require("../services/notificationJobService");
+const NotificationService = require("../services/notificationService");
 
 class NotificationController {
 
-  async generateDueMedicationNotifications(req, res, next) {
+   /**
+   * Retrieve notifications for the logged-in nurse.
+   * @param {Request} req - Express request object.
+   * @param {Response} res - Express response object.
+   * @param {Function} next - Express next middleware function.
+   */
+   async getWardNotifications(req, res, next) {
     try {
-      await NotificationService.generateDueMedicationNotifications();
-      res.status(200).json({ message: "Due medication notifications generated successfully." });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  async getNotificationsForNurse(req, res, next) {
-    try {
-      const nurseId = req.params.nurseId;
-      const notifications = await NotificationService.getNotificationsForNurse(nurseId);
+      if (!req.user.ward_id) {
+        return res.status(400).json({ message: "Ward ID is missing for the nurse." });
+      }
+      const notifications = await NotificationService.getWardNotifications(req.user.ward_id);
       res.status(200).json(notifications);
     } catch (error) {
       next(error);
     }
   }
 
-  async getNotificationsForPatient(req, res, next) {
-    try {
-      const patientId = req.params.patientId;
-      const notifications = await NotificationService.getNotificationsForPatient(patientId);
-      res.status(200).json(notifications);
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  async markNotificationAsRead(req, res, next) {
+  /**
+   * Mark a notification as read.
+   * @param {Request} req - Express request object.
+   * @param {Response} res - Express response object.
+   * @param {Function} next - Express next middleware function.
+   */
+  async markNotificationRead(req, res, next) {
     try {
       const notificationId = req.params.id;
-      const notification = await NotificationService.markNotificationAsRead(notificationId);
-      res.status(200).json({ message: "Notification marked as read.", notification });
+      const updatedNotification = await NotificationService.markNotificationRead(notificationId);
+      res.status(200).json(updatedNotification);
     } catch (error) {
       next(error);
     }
   }
-
-  async deleteNotification(req, res, next) {
-    try {
-      const notificationId = req.params.id;
-      const response = await NotificationService.deleteNotification(notificationId);
-      res.status(200).json(response);
-    } catch (error) {
-      next(error);
-    }
-  }
-
 
 }
 
