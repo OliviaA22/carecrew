@@ -17,6 +17,6 @@
     "jsx": "react-jsx",
     "types": ["node", "jest", "vite"]
   },
-  "include": ["src", "src/postcss.config.js", "src/setupTest.ts", "vite.config.ts"],
+  "include": ["src", "src/postcss.config.js", "src/components/__tests__/setupTest.ts", "vite.config.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
