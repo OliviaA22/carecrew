@@ -3,6 +3,7 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 import SignIn from "./LoginIn";
 import NurseDashboard from "../Nurse/nurseDashboard";
+import PatientDetails from "../Patient/PatientDetail";
 
 interface PrivateRouteProps {
   element: React.ReactElement;

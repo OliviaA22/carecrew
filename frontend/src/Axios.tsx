@@ -4,7 +4,7 @@ import axios, {
   AxiosError,
 } from "axios";
 
-const baseURL = "https://health-connect-kyp7.onrender.com";
+const baseURL = "https://localhost:6000";
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL,
