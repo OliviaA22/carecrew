@@ -10,7 +10,8 @@ const authRoutes = require("./routes/authRoutes.js");
 const medicationPlanRoutes = require("./routes/medicationPlanRoutes.js");
 const notificationRoutes = require("./routes/notificationRoutes.js");
 const patientRoutes = require("./routes/patientRoutes.js");
-const dashboardRoutes = require("./routes/dashboardRoutes.js")
+const dashboardRoutes = require("./routes/dashboardRoutes.js");
+const shiftRoutes = require("./routes/shiftRoutes.js");
 const errorHandler = require("./middleware/errorHandler");
 const cookieParser = require("cookie-parser");
 
@@ -52,6 +53,8 @@ app.use("/api/med-plans", medicationPlanRoutes);
 app.use("/api/auth", authRoutes);
 
 app.use("/api/patients", patientRoutes);
+
+app.use("/api/shifts", shiftRoutes);
 
 app.use("/api/notifications", notificationRoutes);
 

@@ -38,6 +38,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(50),
         unique: true,
       },
+      diagnosis: {
+        type: DataTypes.STRING(150),
+        allowNull: false,
+      },
       admission_date: {
         type: DataTypes.DATEONLY,
         allowNull: false,

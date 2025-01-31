@@ -7,6 +7,7 @@ const Patient = db.Patient;
 const Hospital = db.Hospital;
 
 class PatientService {
+  
   async createPatient(data) {
     // Ensure the ward exists
     const ward = await Ward.findByPk(data.ward_id);

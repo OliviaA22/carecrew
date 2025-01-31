@@ -179,7 +179,7 @@ db.MedicationPlan.hasMany(db.MedicationItem, {
 db.MedicationPlan.belongsTo(db.Patient, {
   foreignKey: 'patient_id',
 });
-db.Patient.hasMany(db.MedicationPlan, {
+db.Patient.hasOne(db.MedicationPlan, {
   foreignKey: 'patient_id',
 });
 

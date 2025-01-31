@@ -6,68 +6,76 @@ const Patient = db.Patient;
 const Ward = db.Ward;
 const Shift = db.Shift;
 
-  class ShiftService {
-    /**
-     * Get shift handover details for a nurse.
-     * @param {number} nurseId - ID of the logged-in nurse.
-     * @returns {Promise<Object>} - Pending tasks and administered medications.
-     */
-    async getShiftHandover(nurseId) {
-      const nurse = await User.findByPk(nurseId);
-      if (!nurse) throw new Error("Nurse not found");
-  
-      // Fetch pending tasks
-      const pendingTasks = await MedicationItem.findAll({
-        where: {
-          status: ["due", "missed"],
-        },
-        include: [
-          {
-            model: Patient,
-            where: { ward_id: nurse.ward_id },
-            attributes: ["id", "first_name", "last_name"],
-          },
-        ],
-      });
-  
-      // Fetch administered medications for the shift
-      const administeredMedications = await MedicationAdministration.findAll({
-        where: {
-          administered_by: nurseId,
-        },
-        include: [
-          {
-            model: Patient,
-            attributes: ["id", "first_name", "last_name"],
-          },
-        ],
-      });
-  
-      return { pendingTasks, administeredMedications };
+class ShiftService {
+  /**
+   * Start a new shift for a nurse.
+   * @param {number} nurseId - ID of the nurse starting the shift.
+   * @returns {Promise<Object>} - The created shift record.
+   */
+  async startShift(nurseId) {
+    if (!nurseId) {
+      throw new Error("Nurse ID is required to start a shift.");
     }
-  
-    /**
-     * Complete the shift and update notes.
-     * @param {number} nurseId - ID of the logged-in nurse.
-     * @param {string} notes - Handover notes for the next nurse.
-     * @returns {Promise<Object>} - Updated shift details.
-     */
-    async completeShift(nurseId, notes) {
-      const shift = await Shift.findOne({
-        where: { nurse_id: nurseId, status: "in progress" },
-      });
-  
-      if (!shift) throw new Error("No active shift found for this nurse.");
-  
-      // Mark shift as completed and update notes
-      await shift.update({
-        status: "completed",
-        notes,
-      });
-  
-      return shift;
+
+    // Check if the nurse already has an active shift
+    const activeShift = await Shift.findOne({
+      where: { nurse_id: nurseId, status: "in progress" },
+    });
+
+    if (activeShift) {
+      throw new Error("You already have an active shift.");
     }
+
+    // Create a new shift record
+    const newShift = await Shift.create({
+      nurse_id: nurseId,
+      start_time: new Date(),
+      status: "in progress",
+    });
+
+    return newShift;
   }
-  
-  module.exports = new ShiftService();
-  
+
+  async getShifts() {
+    return await Shift.findAll({
+      include: [
+        {
+          model: User,
+          attributes: ["first_name", "last_name"],
+        },
+      ],
+    });
+  }
+
+  /**
+   * End the current shift for a nurse.
+   * @param {number} nurseId - ID of the nurse ending the shift.
+   * @param {string} notes - Handover notes for the next shift.
+   * @returns {Promise<Object>} - The updated shift record.
+   */
+  async endShift(nurseId, notes) {
+    if (!nurseId) {
+      throw new Error("Nurse ID is required to end a shift.");
+    }
+
+    // Find the active shift
+    const activeShift = await Shift.findOne({
+      where: { nurse_id: nurseId, status: "in progress" },
+    });
+
+    if (!activeShift) {
+      throw new Error("No active shift found to end.");
+    }
+
+    // Update the shift record
+    await activeShift.update({
+      end_time: new Date(),
+      status: "completed",
+      notes,
+    });
+
+    return activeShift;
+  }
+}
+
+module.exports = new ShiftService();

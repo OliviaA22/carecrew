@@ -41,6 +41,35 @@ class DashboardService {
     return nurse;
   }
 
+  async getNursesByWard(wardId) {
+    const ward = await Ward.findByPk(wardId);
+    if (!ward) {
+      throw new Error("Ward not found");
+    }
+
+    return await User.findAll({
+      where: { 
+        ward_id: wardId, 
+        role: "nurse",
+      },
+      include: [{ model: Ward, attributes: ["name"] }],
+    });
+  }
+
+  async getNursesByHospital(hospitalId) {
+    const hospital = await Hospital.findByPk(hospitalId);
+    if (!hospital) {
+      throw new Error("Hospital not found");
+    }
+
+    return await User.findAll({
+      where: { 
+        hospital_id: hospitalId, 
+        role: "nurse" 
+      },
+      include: [{ model: Ward, attributes: ["name"] }],
+    });
+  }
 
   
   async getDashboardData(nurseId) {

@@ -8,41 +8,65 @@ const MedicationItem = db.MedicationItem;
 const MedicationAdministration = db.MedicationAdministration;
 
 class MedicationPlanService {
+  // async createMedPlan(data) {
+  //   // Ensure patient exists
+  //   const patient = await Patient.findByPk(data.patient_id);
+  //   if (!patient) throw new Error("Patient not found.");
+
+  //   // Validate medications
+  //   if (!data.medications || data.medications.length === 0) {
+  //     throw new Error("At least one medication is required for the plan.");
+  //   }
+
+  //   return await db.sequelize.transaction(async (t) => {
+  //     // Create the medication plan
+  //     const medicationPlan = await MedicationPlan.create(data, {
+  //       transaction: t,
+  //     });
+
+  //     // Add medications to the plan
+  //     for (const med of data.medications) {
+  //       await MedicationItem.create(
+  //         {
+  //           plan_id: medicationPlan.id,
+  //           medication_id: med.medication_id,
+  //           dose: med.dose,
+  //           frequency: med.frequency,
+  //           route_of_administration: med.route_of_administration,
+  //           instructions: med.instructions,
+  //           start_date: med.start_date,
+  //           end_date: med.end_date,
+  //           schedule: med.schedule,
+  //           recurrence: med.recurrence || "daily",
+  //           status: med.status || "due",
+  //         },
+  //         { transaction: t }
+  //       );
+  //     }
+
+  //     return medicationPlan;
+  //   });
+  // }
   async createMedPlan(data) {
     // Ensure patient exists
     const patient = await Patient.findByPk(data.patient_id);
     if (!patient) throw new Error("Patient not found.");
 
-    // Validate medications
-    if (!data.medications || data.medications.length === 0) {
-      throw new Error("At least one medication is required for the plan.");
+    // Check if the patient already has an active medication plan
+    const existingPlan = await MedicationPlan.findOne({
+      where: { patient_id: data.patient_id },
+    });
+
+    if (existingPlan) {
+      throw new Error("This patient already has an active medication plan.");
     }
 
     return await db.sequelize.transaction(async (t) => {
       // Create the medication plan
-      const medicationPlan = await MedicationPlan.create(data, {
-        transaction: t,
-      });
-
-      // Add medications to the plan
-      for (const med of data.medications) {
-        await MedicationItem.create(
-          {
-            plan_id: medicationPlan.id,
-            medication_id: med.medication_id,
-            dose: med.dose,
-            frequency: med.frequency,
-            route_of_administration: med.route_of_administration,
-            instructions: med.instructions,
-            start_date: med.start_date,
-            end_date: med.end_date,
-            schedule: med.schedule,
-            recurrence: med.recurrence || "daily",
-            status: med.status || "due",
-          },
-          { transaction: t }
-        );
-      }
+      const medicationPlan = await MedicationPlan.create(
+        { data },
+        { transaction: t }
+      );
 
       return medicationPlan;
     });
@@ -53,7 +77,6 @@ class MedicationPlanService {
       include: [
         {
           model: Patient,
-          attributes: ["first_name", "last_name", "medical_record_number"],
         },
       ],
     });
@@ -65,7 +88,6 @@ class MedicationPlanService {
       include: [
         {
           model: Patient,
-          attributes: ["first_name", "last_name", "medical_record_number"],
         },
         {
           model: MedicationItem,
@@ -81,6 +103,28 @@ class MedicationPlanService {
     return plan;
   }
 
+  async addMedicationsToPlan(planId, medications) {
+    const medicationPlan = await MedicationPlan.findByPk(planId);
+    if (!medicationPlan) throw new Error("Medication plan not found.");
+  
+    if (!medications || medications.length === 0) {
+      throw new Error("At least one medication is required.");
+    }
+  
+    return await db.sequelize.transaction(async (t) => {
+      const createdMedications = await MedicationItem.bulkCreate(
+        medications.map(med => ({
+          ...med,
+          plan_id: planId,
+          status: med.status || "due",
+        })),
+        { transaction: t }
+      );
+  
+      return { message: "Medications added successfully.", medications: createdMedications };
+    });
+  }
+  
   // Get all medications for a patient during a shift
 
   async getMedPlansForPatient(patientId) {
@@ -117,46 +161,6 @@ class MedicationPlanService {
       console.error("Error in getting Plans for Patient:", error);
       throw error;
     }
-  }
-
-  /**
-   * Update the status of a specific medication item.
-   * @param {number} medicationItemId - ID of the medication item.
-   * @param {string} status - New status of the medication (e.g., 'administered', 'missed').
-   * @param {string|null} notes - Optional notes for skipped medications.
-   * @returns {Promise<Object>} - Updated medication item.
-   */
-  async updateMedicationStatus(medicationItemId, status, notes = null) {
-    const medicationItem = await MedicationItem.findByPk(medicationItemId);
-    if (!medicationItem) throw new Error("Medication item not found");
-
-    // Update the medication item
-    return await medicationItem.update({ status, skipped_notes: notes });
-  }
-
-  /**
-   * Log a medication administration record.
-   * @param {Object} logData - Data for the administration record.
-   * @param {number} logData.medication_item_id - ID of the medication item.
-   * @param {number} logData.patient_id - ID of the patient.
-   * @param {number} logData.administered_by - ID of the nurse who administered the medication.
-   * @param {string} logData.status - Status of administration ('administered', 'skipped').
-   * @param {string|null} logData.notes - Optional notes for skipped medications.
-   * @returns {Promise<Object>} - The created medication administration record.
-   */
-  async logMedicationAdministration(logData) {
-    // Validate medication item exists
-    const medicationItem = await MedicationItem.findByPk(
-      logData.medication_item_id
-    );
-    if (!medicationItem) throw new Error("Medication item not found");
-
-    // Validate patient exists
-    const patient = await Patient.findByPk(logData.patient_id);
-    if (!patient) throw new Error("Patient not found");
-
-    // Create medication administration record
-    return await MedicationAdministration.create(logData);
   }
 
   async getMedPlansForDoctor(doctorId) {

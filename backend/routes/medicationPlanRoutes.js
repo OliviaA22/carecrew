@@ -4,15 +4,15 @@ const MedicationPlanController  = require('../controllers/medicationPlanControll
 
 const isLoggedIn  = require("../middleware/isLoggedIn");
 const { roleCheck } = require("../middleware/roleCheck");
+const {authenticateUser} = require("../middleware/authUser");
 
+medicationPlanRouter.get('/', authenticateUser,  MedicationPlanController.getAllMedPlans);
 
-medicationPlanRouter.get('/', isLoggedIn, MedicationPlanController.getAllMedPlans);
+medicationPlanRouter.post('/new-plan',  authenticateUser, roleCheck('admin'), MedicationPlanController.createMedPlan);
 
-medicationPlanRouter.post('/new-plan', isLoggedIn, roleCheck('admin'), MedicationPlanController.createMedPlan);
+medicationPlanRouter.get('/:patient_id',  authenticateUser, MedicationPlanController.getMedPlansForPatient);
 
-medicationPlanRouter.get('/:patient_id', isLoggedIn, MedicationPlanController.getMedPlansForPatient);
-
-medicationPlanRouter.get('/:id', isLoggedIn, MedicationPlanController.getMedPlanById);
+medicationPlanRouter.get('/:id',  authenticateUser, MedicationPlanController.getMedPlanById);
 
 // medicationPlanRouter.put('/:id', isLoggedIn, roleCheck('admin'), MedicationPlanController.updateBlog);
 

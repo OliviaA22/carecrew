@@ -21,6 +21,27 @@ class DashboardController {
     }
   }
 
+    async getNursesByHospital(req, res, next) {
+      try {
+        const nurses = await DashbordService.getNursesByHospital(
+          req.params.hospital_id
+        );
+        res.status(200).json(nurses);
+      } catch (error) {
+        next(error);
+      }
+    }
+  
+    async getNursesByWard(req, res, next) {
+      try {
+        const nurses = await DashbordService.getNursesByWard(
+          req.params.ward_id
+        );
+        res.status(200).json(nurses);
+      } catch (error) {
+        next(error);
+      }
+    }
     /**
    * Fetch dashboard data for the logged-in nurse.
    * @param {Request} req - Express request object.

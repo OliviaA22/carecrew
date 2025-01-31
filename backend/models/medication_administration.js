@@ -34,7 +34,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT 
       }, // Notes for skipped doses
       time_administered: { 
-        type: DataTypes.DATE, 
+        type: DataTypes.DATE,  
         defaultValue: DataTypes.NOW 
       },
     },
