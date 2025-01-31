@@ -38,7 +38,7 @@ const LoginForm: React.FC = () => {
         if (userData.role === "admin") {
           navigate("/admindashboard");
         } else {
-          navigate("/dashboard");
+          navigate("/nursedashboard");
         }
       } else {
         setError("Unexpected response from server");
