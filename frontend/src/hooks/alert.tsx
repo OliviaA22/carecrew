@@ -1,54 +1,44 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
+
+interface Notification {
+  id: number;
+  message: string;
+  notification_type: "task" | "reminder" | "alert";
+  is_read: boolean;
+}
 
 const NotificationCenter: React.FC = () => {
-  const [notifications, setNotifications] = useState<string[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  const fetchNotifications = async () => {
+    try {
+      const response = await axios.get("/api/notifications/ward");
+      setNotifications(response.data);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  };
 
   useEffect(() => {
-    // Polling mechanism to check for new notifications
-    const interval = setInterval(() => {
-      // Simulated notification check
-      checkForNotifications();
-    }, 5000); // Check every 5 seconds
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 30000); // Check every 30 seconds
 
     return () => clearInterval(interval);
   }, []);
 
-  const checkForNotifications = () => {
-    // Replace with actual backend call to check for time-based events
-    const currentTime = new Date();
-    const potentialNotification = checkTimeBasedEvents(currentTime);
-
-    if (potentialNotification) {
-      addNotification(potentialNotification);
-    }
-  };
-
-  const addNotification = (message: string) => {
-    setNotifications((prev) => [...prev, message]);
-  };
-
   return (
     <div>
-      {notifications.map((notification, index) => (
-        <div key={index} className="notification">
-          {notification}
+      {notifications.map((notification) => (
+        <div
+          key={notification.id}
+          className={`notification ${notification.notification_type}`}
+        >
+          {notification.message}
         </div>
       ))}
     </div>
   );
-};
-
-// Helper function to check time-based events
-const checkTimeBasedEvents = (currentTime: Date): string | null => {
-  // Example: Check for specific time-based conditions
-  const hour = currentTime.getHours();
-  const minute = currentTime.getMinutes();
-
-  if (hour === 12 && minute === 0) {
-    return "It's noon! Time for lunch break.";
-  }
-
-  return null;
 };
 
 export default NotificationCenter;
