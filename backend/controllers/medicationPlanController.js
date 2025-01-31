@@ -31,6 +31,17 @@ class MedicationPlanController {
     }
   }
 
+  async createMedicationAdministration(req, res, next) {
+    try {
+      req.body.administered_by = req.user.id;
+      const newRecord = await MedicationPlanService.createMedicationAdministration(req.body);
+      res.status(201).json(newRecord);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+
   async getAllMedPlans(req, res, next) {
     try {
       const medicationPlans = await MedicationPlanService.getAllMedPlans();
@@ -50,6 +61,44 @@ class MedicationPlanController {
     }
   }
 
+  // async createMedicationAdministration(req, res, next) {
+  //   try {
+  //     req.body.administered_by = req.user.id;
+  //     const newRecord = await MedicationPlanService.createMedicationAdministration(req.body);
+  //     res.status(201).json({ message: "Medication administered successfully.", data: newRecord });
+  //   } catch (error) {
+  //     next(error);
+  //   }
+  // }
+
+  async getAllMedicationAdministrations(req, res, next) {
+    try {
+      const records = await MedicationPlanService.getAllMedicationAdministrations();
+      res.status(200).json(records);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getMedicationAdministrationById(req, res, next) {
+    try {
+      const record = await MedicationPlanService.getMedicationAdministrationById(req.params.id);
+      res.status(200).json(record);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateMedicationAdministration(req, res, next) {
+    try {
+      const updatedRecord = await MedicationPlanService.updateMedicationAdministration(req.params.id, req.body);
+      res.status(200).json({ message: "Medication administration updated successfully.", data: updatedRecord });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+
   async updateMedPlan(req, res, next) {
     try {
       const { planId } = req.params;
@@ -60,6 +109,14 @@ class MedicationPlanController {
     }
   }
 
+  async deleteMedicationAdministration(req, res, next) {
+    try {
+      await MedicationPlanService.deleteMedicationAdministration(req.params.id);
+      res.status(200).json({ message: "Medication administration deleted successfully." });
+    } catch (error) {
+      next(error);
+    }
+  }
 
   async deleteMedPlan(req, res, next) {
     try {

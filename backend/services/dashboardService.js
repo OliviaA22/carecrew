@@ -94,19 +94,6 @@ class DashboardService {
           include: [
             {
               model: MedicationItem,
-              attributes: [
-                "id",
-                "medication_id",
-                "dose",
-                "frequency",
-                "route_of_administration",
-                "instructions",
-                "start_date",
-                "end_date",
-                "schedule",
-                "recurrence",
-                "status",
-              ],
               include: [
                 {
                   model: Medication,

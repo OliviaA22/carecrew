@@ -13,13 +13,25 @@ medicationPlanRouter.post('/new-plan',  authenticateUser, roleCheck('admin'), me
 
 medicationPlanRouter.post("/:planId/med-items", authenticateUser, roleCheck('admin'), medicationPlanController.addMedicationsToPlan);
 
+medicationPlanRouter.post("/adminstration", authenticateUser, medicationPlanController.createMedicationAdministration);
+
+medicationPlanRouter.get("/adminstration", authenticateUser, roleCheck('admin'), medicationPlanController.getAllMedicationAdministrations);
+
+medicationPlanRouter.get("/adminstration/:id", authenticateUser, roleCheck('admin'), medicationPlanController.getMedicationAdministrationById);
+
+medicationPlanRouter.put("/adminstration/:id", authenticateUser, medicationPlanController.updateMedicationAdministration);
+
+medicationPlanRouter.delete("/adminstration/:id", authenticateUser, roleCheck('admin'), medicationPlanController.deleteMedicationAdministration);
+
 medicationPlanRouter.get('/:id',  authenticateUser, medicationPlanController.getMedPlanById);
 
 medicationPlanRouter.put("/:planId", authenticateUser, roleCheck('admin'), medicationPlanController.updateMedPlan);
 
-// 🔹 Delete a medication plan
 medicationPlanRouter.delete("/:id", authenticateUser, roleCheck('admin'), medicationPlanController.deleteMedPlan);
 
 
 
 module.exports = medicationPlanRouter;
+
+
+
