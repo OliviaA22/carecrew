@@ -6,12 +6,12 @@ import React, {
   useEffect,
 } from "react";
 import axiosInstance from "../../axios/Axios";
-import { User } from "../../data/Types";
+import { LoginResponse, User } from "../../data/Types";
 
 interface AuthContextType {
   isAuthenticated: boolean;
   userData: User | null;
-  login: (data: User) => void;
+  login: (data: LoginResponse) => void; // Changed from User to LoginResponse
   logout: () => Promise<void>;
   checkAuth: () => Promise<boolean>;
 }
@@ -24,7 +24,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const checkAuth = async () => {
     try {
-      const response = await axiosInstance.get("/api/auth/check-auth");
+      const response = await axiosInstance.get<LoginResponse>(
+        "/api/auth/check-auth"
+      );
       setIsAuthenticated(true);
       setUserData(response.data.user);
       return true;
@@ -39,9 +41,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     checkAuth();
   }, []);
 
-  const login = (data: User) => {
-    setUserData(data);
+  const login = (data: LoginResponse) => {
+    setUserData(data.user);
     setIsAuthenticated(true);
+    // You might want to store the token somewhere, e.g., in localStorage
+    localStorage.setItem("token", data.token);
   };
 
   const logout = async () => {

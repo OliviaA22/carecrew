@@ -5,8 +5,7 @@ import axios, {
 } from "axios";
 
 // Base URL for the API
-const baseURL =
-  import.meta.env.VITE_API_URL || "https://health-connect-kyp7.onrender.com";
+const baseURL = import.meta.env.VITE_API_URL || "https://carecrew.onrender.com";
 
 // Create an axios instance with the base URL and default headers
 const axiosInstance: AxiosInstance = axios.create({
@@ -42,7 +41,7 @@ axiosInstance.interceptors.response.use(
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         // Handle authentication failure by redirecting to the root path
-        window.location.href = "/details";
+        window.location.href = "/";
         // Reject the promise with the refresh error
         return Promise.reject(refreshError);
       }

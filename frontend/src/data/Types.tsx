@@ -22,33 +22,44 @@ export interface Location {
 }
 
 export interface User {
-  userId: number;
-  token?: string;
+  id: number;
   first_name: string;
   last_name: string;
-  email?: string;
-  role?: string;
+  email: string;
+  role: string;
   address: Address;
-  languages: Language[];
-  title?: string;
-  phone_number?: string;
-  date_of_birth?: Date;
+  phone_number: string;
+  date_of_birth: string;
   password?: string;
-  gender?: string;
-  location?: Location;
+  gender: string;
+  hospital_id: number;
+  ward_id: number;
+  ward: Ward;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface Doctor extends User {
-  id?: number; //Workaround
-  specialization: Specialization;
+export interface Address {
+  city: string;
+  street: string;
+  country: string;
+  postalCode: string;
+}
+
+export interface Ward {
+  id: number;
+  hospital_id: number;
+  name: string;
+}
+
+export interface LoginResponse {
+  user: User;
+  token: string;
 }
 
 export interface Patient extends User {
-  insurance?: string;
-}
-
-export interface DoctorWithDistance extends Doctor {
-  distance: number;
+  room: string;
+  nextMedicationTime: string;
 }
 
 export interface Availability {
@@ -69,7 +80,6 @@ export interface Appointment {
   appointmentReason: AppointmentReason;
   bookTranslation: boolean;
   completed: boolean;
-  doctor: Doctor;
   patient: Patient; // Make patient properties optional
   availability: Availability;
 }
