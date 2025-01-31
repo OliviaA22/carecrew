@@ -58,8 +58,17 @@ export interface LoginResponse {
 }
 
 export interface Patient extends User {
-  room: string;
+  room_no: string;
   nextMedicationTime: string;
+  admission_date: Date;
+  medical_record_number: string;
+  medication_plans: MedicationPlan[];
+}
+
+export interface MedicationPlan {
+  medication_name: string;
+  dosage: string;
+  frequency: string;
 }
 
 export interface Availability {

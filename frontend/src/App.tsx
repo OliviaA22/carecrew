@@ -13,6 +13,7 @@ import SignUp from "./pages/Home/SignIn";
 import SignIn from "./pages/LogIn/LoginIn";
 import NurseDashboard from "./pages/Nurse/nurseDashboard";
 import PatientDetails from "./pages/Patient/PatientDetail";
+import PatientList from "./pages/Patient/PatientList";
 
 const queryClient = new QueryClient();
 
@@ -35,7 +36,7 @@ const App = () => {
               }
             />
             <Route
-              path="/details"
+              path="/details/:id"
               element={
                 <PrivateRoute
                   element={<PatientDetails />}
@@ -83,8 +84,8 @@ const App = () => {
               path="/patients"
               element={
                 <PrivateRoute
-                  element={<ManagePatients />}
-                  requiredRoles={["admin"]}
+                  element={<PatientList />}
+                  requiredRoles={["nurse"]}
                 />
               }
             />
