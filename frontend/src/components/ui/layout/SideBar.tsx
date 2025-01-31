@@ -18,22 +18,22 @@ const SideBar: React.FC = () => {
   const navLinks: NavLinkItem[] = [
     {
       name: "Dashboard",
-      link: "/admindashboard",
+      link: "/nursedashboard",
       icon: <LuLayoutDashboard size={20} />,
     },
     {
-      name: "Manage Patients",
+      name: "Patients",
       link: "/patients",
       icon: <MdManageAccounts size={28} />,
     },
     {
-      name: "Manage Doctors",
+      name: "Medication Schedules",
       link: "/doctors",
       icon: <FaUserDoctor size={24} />,
     },
     {
-      name: "Manage Appointments",
-      link: "/appointments",
+      name: "News",
+      link: "/news",
       icon: <MdOutlineManageHistory size={22} />,
     },
   ];
@@ -41,7 +41,7 @@ const SideBar: React.FC = () => {
   return (
     <div className="w-[262px] h-screen py-4 px-4 flex flex-col bg-blue-600">
       <div className="text-white italia text-2xl font-semibold">
-        Health Connect
+        CareCrew MedAssist
       </div>
       <div className="flex flex-col gap-6 mt-14">
         {navLinks.map((link, index) => (
