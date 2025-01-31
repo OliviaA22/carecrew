@@ -1,16 +1,16 @@
 
 const express = require("express");
 const shiftRouter = express.Router();
-const ShiftController = require("../controllers/shiftController");
+const shiftController = require("../controllers/shiftController");
 const {authenticateUser} = require("../middleware/authUser");
 const isLoggedIn = require("../middleware/isLoggedIn");
 
 
+shiftRouter.get("/", authenticateUser, shiftController.getShifts);
 
-shiftRouter.post("/start", authenticateUser, ShiftController.startShift);
+shiftRouter.post("/start", authenticateUser, shiftController.startShift);
 
-shiftRouter.post("/end", authenticateUser, ShiftController.endShift);
+shiftRouter.post("/end", authenticateUser, shiftController.endShift);
 
-shiftRouter.get("/", authenticateUser, ShiftController.getShifts);
 
 module.exports = shiftRouter;

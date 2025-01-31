@@ -15,11 +15,13 @@ patientRouter.get('/ward/:ward_id', authenticateUser, patientController.getPatie
 
 patientRouter.get('/hospital/:hospital_id', authenticateUser, roleCheck('admin'),  patientController.getPatientsByHospital);
 
+patientRouter.get("/with-medications", authenticateUser, patientController.getPatientsMedications);
+
+patientRouter.put('/discharge/:id', authenticateUser, roleCheck('admin'),  patientController.dischargePatient);
+
 patientRouter.get('/:id', authenticateUser, patientController.getPatientById);
 
 patientRouter.put('/:id', authenticateUser, roleCheck('admin'),  patientController.updatePatient);
-
-patientRouter.put('/discharge/:id', authenticateUser, roleCheck('admin'),  patientController.dischargePatient);
 
 
 

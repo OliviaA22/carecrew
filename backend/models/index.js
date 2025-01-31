@@ -200,7 +200,6 @@ db.MedicationItem.hasMany(db.Notification, {
 });
 
 
-
 db.sequelize
   .sync({ force: false })
   .then(() => {})

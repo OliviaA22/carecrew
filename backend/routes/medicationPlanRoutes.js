@@ -1,21 +1,25 @@
 const express = require('express');
 const medicationPlanRouter = express.Router();
-const MedicationPlanController  = require('../controllers/medicationPlanController');
+const medicationPlanController  = require('../controllers/medicationPlanController');
 
 const isLoggedIn  = require("../middleware/isLoggedIn");
 const { roleCheck } = require("../middleware/roleCheck");
 const {authenticateUser} = require("../middleware/authUser");
 
-medicationPlanRouter.get('/', authenticateUser,  MedicationPlanController.getAllMedPlans);
 
-medicationPlanRouter.post('/new-plan',  authenticateUser, roleCheck('admin'), MedicationPlanController.createMedPlan);
+medicationPlanRouter.get("/", authenticateUser, medicationPlanController.getAllMedPlans);
 
-medicationPlanRouter.get('/:patient_id',  authenticateUser, MedicationPlanController.getMedPlansForPatient);
+medicationPlanRouter.post('/new-plan',  authenticateUser, roleCheck('admin'), medicationPlanController.createMedPlan);
 
-medicationPlanRouter.get('/:id',  authenticateUser, MedicationPlanController.getMedPlanById);
+medicationPlanRouter.post("/:planId/med-items", authenticateUser, roleCheck('admin'), medicationPlanController.addMedicationsToPlan);
 
-// medicationPlanRouter.put('/:id', isLoggedIn, roleCheck('admin'), MedicationPlanController.updateBlog);
+medicationPlanRouter.get('/:id',  authenticateUser, medicationPlanController.getMedPlanById);
 
-// medicationPlanRouter.delete('/:id', isLoggedIn, roleCheck('admin'), MedicationPlanController.deleteBlog);
+medicationPlanRouter.put("/:planId", authenticateUser, roleCheck('admin'), medicationPlanController.updateMedPlan);
+
+// 🔹 Delete a medication plan
+medicationPlanRouter.delete("/:id", authenticateUser, roleCheck('admin'), medicationPlanController.deleteMedPlan);
+
+
 
 module.exports = medicationPlanRouter;

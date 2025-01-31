@@ -1,36 +1,47 @@
-
-# MedAssist: An Integrated Health Management App
+# CareCrew: A Nurse-Centric Hospital Management App
 
 ## Overview
 
-MedAssist is a web (mobile) application designed to empower nurses to manage their health effectively. The app focuses on providing a seamless appointment booking experience with optional dial-in translation services to ensure users can communicate effectively with healthcare professionals.
+CareCrew is a hospital management system designed to **optimize nurses' workflows**, reduce medication errors, and **enhance patient care**. The platform **digitizes documentation, automates medication administration tracking, and streamlines shift handovers**, ensuring nurses can focus on their core responsibility—**caring for patients**.
 
 ## Features
 
-- **Appointment Booking**: Users can schedule appointments with healthcare professionals, including doctors, nutritionists, and fitness trainers. The platform provides an easy-to-use interface for selecting available time slots and booking appointments.
-- **Dial-In Translation Services**: Users have the option to include translation services during their appointments. This ensures clear communication between the user and the healthcare professional, regardless of language barriers.
-- **Future Feature - Telehealth Services**: Users can conduct virtual consultations via video with healthcare professionals and receive prescriptions or personalized treatment plans within the app.
-- **Future Feature - Health Education Resources**: Offers a library of articles, videos, and interactive modules covering various health topics, empowering users to make informed decisions about their well-being.
-- **Future Feature - Community Support**: A supportive community where users can share their experiences, tips, and encouragement with fellow members. This feature promotes accountability and motivation for achieving health goals.
-- **Future Feature - Health Data Tracking**: Plans to enable users to input and track various health metrics such as physical activity, nutrition intake, sleep patterns, medication adherence, and vital signs (heart rate, blood pressure, blood sugar levels, etc.).
-- **Future Feature - Personalized Health Insights**: Machine learning algorithms to analyze user data and provide personalized insights and recommendations such as lifestyle changes, reminders for medication intake, and alerts for potential health risks based on the user's health data.
+- **Nurse-Centric Dashboard**: Provides an overview of assigned patients, pending tasks, and upcoming medication schedules.
+- **Patient Management**: Nurses can view assigned patients, access their medical history, and document real-time observations.
+- **Medication Administration Workflow**:
+  - Nurses mark medications as **administered** or **skipped** with notes explaining the reason.
+  - Automatic **reminders for scheduled medications**.
+  - **Real-time alerts** for missed or critical medications.
+- **Shift Handover Automation**:
+  - Nurses start and end their shifts with a **single click**.
+  - The system automatically compiles pending tasks for the incoming nurse.
+- **Real-Time Documentation**:
+  - Nurses can log **observations, incidents, and care plan updates** while attending to patients.
+- **Notifications & Alerts**:
+  - Alerts for **medications due in 30 minutes**.
+  - Notifications for **missed or overdue medications**.
+  - Critical alerts for **urgent patient needs**.
 
 ## Target Market
 
-HealthConnect targets individuals of all ages who proactively manage their health and well-being. The primary target demographics include health-conscious individuals, chronic disease patients, fitness enthusiasts, and individuals seeking convenient access to healthcare services.
+CareCrew is designed for **hospitals and healthcare facilities** looking to digitize nurse workflows, reduce administrative burdens, and improve patient safety. Our solution is ideal for **public and private hospitals**, **nursing homes**, and **rehabilitation centers**.
 
 ## Tech Stack
 
-This project leverages a powerful combination of React and Node.js, along with a suite of dependencies designed to enhance functionality, security, and user experience. This ensures that the app is not only scalable and efficient but also secure and easy to use for all users.
+CareCrew leverages a **scalable and efficient technology stack** to provide a **robust hospital management system**.
+
+### Backend
+
+- **Node.js**: Event-driven, non-blocking I/O runtime for scalable applications.
+- **Express.js**: A minimalist and fast web framework for building APIs.
+- **Sequelize**: ORM for handling **MySQL** database interactions.
+- **MySQL**: Relational database management system.
+- **Cron Jobs**: For scheduled tasks like **medication reminders and missed medication alerts**.
 
 ### Frontend
 
 - **React**: Enables a dynamic and responsive experience with its component-based architecture.
 - **TypeScript**: Adds static types to JavaScript, improving developer productivity and code quality.
-
-### Backend
-
-- **Node.js**: Provides a scalable and efficient server-side solution with an event-driven architecture to handle numerous simultaneous connections.
 
 ### Dependencies
 
@@ -57,7 +68,7 @@ This project leverages a powerful combination of React and Node.js, along with a
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/OliviaA22/health-connect
+   git clone https://github.com/OliviaA22/carecrew
    ```
 
 2. **Install dependencies for the backend:**
@@ -78,10 +89,10 @@ This project leverages a powerful combination of React and Node.js, along with a
     To open the frontend in developer mode do `npx vite` from the frontend directory and the page opens automatically. otherwise, run `npm start`
     The admin access to the website is email `olivia@mail.com` and password: `securePassword123`
 
-5. **Set up environment variables:**
-   - The backend uses some APIs which cannot be disclosed and as such, cannot work properly without the required credentials.
+4. **Set up environment variables:**
+   - The backend uses some APIs and variables which cannot be disclosed and as such, cannot work properly without the required credentials.
 
-6. **Run the backend server:**
+5. **Run the backend server:**
 
    ```bash
    cd backend
@@ -89,4 +100,4 @@ This project leverages a powerful combination of React and Node.js, along with a
    npm start (production)
    ```
 
-HealthConnect aims to revolutionize the way individuals manage their health by providing a comprehensive, user-friendly platform for appointment booking and telehealth services with optional translation support. Join us in making healthcare management accessible and efficient for everyone
+CareCrew aims to revolutionize hospital workflows by enhancing nurse efficiency, reducing medication error, improving documentation process, and ensuring safe medication administration. 🚀

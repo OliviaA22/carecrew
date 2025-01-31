@@ -48,7 +48,10 @@ class MedicationPlanService {
   //   });
   // }
   async createMedPlan(data) {
-    // Ensure patient exists
+
+    if (!data.patient_id || !data.created_by || !data.valid_from) {
+      throw new Error("Missing required fields: patient_id, created_by, valid_from");
+    }
     const patient = await Patient.findByPk(data.patient_id);
     if (!patient) throw new Error("Patient not found.");
 
@@ -62,9 +65,11 @@ class MedicationPlanService {
     }
 
     return await db.sequelize.transaction(async (t) => {
-      // Create the medication plan
       const medicationPlan = await MedicationPlan.create(
-        { data },
+        { ...data,
+          valid_until: data.valid_until || null, 
+          additional_notes: data.additional_notes || null,
+         },
         { transaction: t }
       );
 
@@ -72,44 +77,15 @@ class MedicationPlanService {
     });
   }
 
-  async getAllMedPlans() {
-    const plans = await MedicationPlan.findAll({
-      include: [
-        {
-          model: Patient,
-        },
-      ],
-    });
-    return plans;
-  }
 
-  async getMedPlanById(planId) {
-    const plan = await MedicationPlan.findByPk(planId, {
-      include: [
-        {
-          model: Patient,
-        },
-        {
-          model: MedicationItem,
-          include: [
-            {
-              model: Medication,
-              attributes: ["name"],
-            },
-          ],
-        },
-      ],
-    });
-    return plan;
-  }
 
   async addMedicationsToPlan(planId, medications) {
+    if (!planId || !medications || medications.length === 0) {
+      throw new Error("Missing required data: planId and medications are required.");
+    }
+
     const medicationPlan = await MedicationPlan.findByPk(planId);
     if (!medicationPlan) throw new Error("Medication plan not found.");
-  
-    if (!medications || medications.length === 0) {
-      throw new Error("At least one medication is required.");
-    }
   
     return await db.sequelize.transaction(async (t) => {
       const createdMedications = await MedicationItem.bulkCreate(
@@ -117,15 +93,56 @@ class MedicationPlanService {
           ...med,
           plan_id: planId,
           status: med.status || "due",
+          scheduled_time: med.scheduled_time.slice(0, 5) 
         })),
         { transaction: t }
       );
   
-      return { message: "Medications added successfully.", medications: createdMedications };
+      return { message: "Medications added successfully.", 
+        medications: createdMedications };
     });
   }
   
-  // Get all medications for a patient during a shift
+
+  async getAllMedPlans() {
+    return await MedicationPlan.findAll({
+      include: [
+        {
+          model: Patient,
+        },
+        { model: MedicationItem,
+          include: [
+            {
+              model: Medication,
+            },
+          ],
+        }
+      ],
+    });
+  }
+
+  async getMedPlanById(planId) {
+    if (!planId) throw new Error("Plan ID is required.");
+
+    const medicationPlan = await MedicationPlan.findByPk(planId, {
+      include: [
+        {
+        model: Patient,
+      },
+      { model: MedicationItem,
+        include: [
+          {
+            model: Medication,
+          },
+        ],
+      }],
+    });
+
+    if (!medicationPlan) throw new Error("Medication plan not found.");
+
+    return medicationPlan;
+  }
+
 
   async getMedPlansForPatient(patientId) {
     try {
@@ -163,31 +180,42 @@ class MedicationPlanService {
     }
   }
 
-  async getMedPlansForDoctor(doctorId) {
-    const plans = await MedicationPlan.findAll({
-      where: { created_by: doctorId },
-    });
-    return plans;
-  }
 
-  async updateMedPlan(planId, updates) {
-    const plan = await MedicationPlan.findByPk(planId);
-    if (!plan) {
-      throw new Error("Plan not found");
+  async updateMedPlan(planId, updateData) {
+    if (!planId) {
+      throw new Error("Invalid request: Plan ID required.");
     }
-    await plan.update(updates);
-    return plan;
+
+    const medicationPlan = await MedicationPlan.findByPk(planId);
+    if (!medicationPlan) throw new Error("Medication plan not found.");
+
+    return await db.sequelize.transaction(async (t) => {
+      await medicationPlan.update(updateData, { transaction: t });
+
+      return { message: "Medication plan updated successfully.", medicationPlan };
+    });
   }
 
+  /**
+   * Delete a medication plan.
+   * Ensures associated medications are deleted to maintain integrity.
+   */
   async deleteMedPlan(planId) {
-    const result = await MedicationPlan.destroy({
-      where: { id: planId },
+    if (!planId) throw new Error("Plan ID is required.");
+
+    return await db.sequelize.transaction(async (t) => {
+      const medicationPlan = await MedicationPlan.findByPk(planId);
+      if (!medicationPlan) throw new Error("Medication plan not found.");
+
+      await MedicationItem.destroy({ where: { plan_id: planId }, transaction: t });
+      await medicationPlan.destroy({ transaction: t });
+
+      return { message: "Medication plan and associated medications deleted successfully." };
     });
-    if (result === 0) {
-      throw new Error("Plan not found or already deleted.");
-    }
-    return "Plan deleted successfully.";
   }
+
+
+
 }
 
 module.exports = new MedicationPlanService();

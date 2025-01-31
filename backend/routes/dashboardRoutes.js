@@ -10,11 +10,12 @@ dashboardRouter.get('/hospitals', authenticateUser, roleCheck('admin'), dashboar
 
 dashboardRouter.get('/wards', authenticateUser, roleCheck('admin'), dashboardController.getWards);
 
+dashboardRouter.get('/dashboard', authenticateUser, dashboardController.getDashboardData);
+
 dashboardRouter.get('/nurses-ward/:ward_id', authenticateUser, roleCheck('admin'),  dashboardController.getNursesByWard);
 
 dashboardRouter.get('/nurses-hospital/:hospital_id', authenticateUser, roleCheck('admin'), dashboardController.getNursesByHospital);
 
-dashboardRouter.get('/dashboard', authenticateUser, dashboardController.getDashboardData);
 
 
 module.exports = dashboardRouter;

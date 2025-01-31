@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATEONLY,
       }, // When medication ends
       scheduled_time: { 
-        type: DataTypes.DATE,
+        type: DataTypes.STRING(8),
         allowNull: false,
       },
       status: {

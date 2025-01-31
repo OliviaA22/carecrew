@@ -5,6 +5,9 @@ db = require("../models");
 const Ward = db.Ward;
 const Patient = db.Patient;
 const Hospital = db.Hospital;
+const MedicationPlan = db.MedicationPlan;
+const MedicationItem = db.MedicationItem;
+const Medication = db.Medication;
 
 class PatientService {
   
@@ -83,6 +86,41 @@ class PatientService {
     }
 
     return patient;
+  }
+
+  async getPatientsMedications() {
+    try {
+      const patients = await Patient.findAll({
+        attributes: ["id", "first_name", "last_name", "date_of_birth"],
+        include: [
+          {
+            model: MedicationPlan,
+            attributes: ["id", "name", "valid_from", "valid_until", "additional_notes"],
+            include: [
+              {
+                model: MedicationItem,
+                attributes: ["id", "dose", "frequency", "route_of_administration", "instructions", "start_date", "end_date", "scheduled_time", "status"],
+                include: [
+                  {
+                    model: Medication,
+                    attributes: ["id", "name", "description", "dosage_form"], 
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      });
+
+      if (!patients || patients.length === 0) {
+        throw new Error("No patients found with medication details.");
+      }
+
+      return patients;
+    } catch (error) {
+      console.error("Error fetching patients with medications:", error.message);
+      throw new Error("Could not fetch patient medication details.");
+    }
   }
 
   async updatePatient(patientId, data) {

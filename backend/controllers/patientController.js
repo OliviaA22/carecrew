@@ -50,6 +50,15 @@ class PatientController {
     }
   }
 
+  async getPatientsMedications(req, res, next) {
+    try {
+      const patients = await PatientService.getPatientsMedications();
+      res.status(200).json({ message: "Patients with medication details fetched successfully.", patients });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async updatePatient(req, res, next) {
     try {
       const updatedPatient = await PatientService.updatePatient(
