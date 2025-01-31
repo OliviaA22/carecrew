@@ -26,7 +26,23 @@ class DashboardService {
     return wards;
   }
 
+  async getNurses() {
+    const nurse = await User.findAll({
+      where: {
+        role: "nurse",
+      },
+      include: [
+        {
+          model: Ward,
+          attributes: ["name"], // Only include ward name
+        },
+      ],
+    });
+    return nurse;
+  }
 
+
+  
   async getDashboardData(nurseId) {
     if (!nurseId) throw new Error("Nurse ID is required");
   
@@ -45,7 +61,7 @@ class DashboardService {
       include: [
         {
           model: MedicationPlan,
-          attributes: ["id", "name", "valid_from", "valid_until", "status", "additional_notes"],
+          attributes: ["id", "name", "valid_from", "valid_until", "additional_notes"],
           include: [
             {
               model: MedicationItem,

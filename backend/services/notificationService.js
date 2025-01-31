@@ -121,7 +121,7 @@ class NotificationService {
     try {
       return await MedicationItem.findAll({
         where: {
-          status: "due",
+          status: "missed",
           [Op.or]: [
             db.Sequelize.literal(
               `JSON_CONTAINS(schedule, JSON_QUOTE("${pastTime}"))`

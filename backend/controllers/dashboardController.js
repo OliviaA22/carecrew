@@ -5,8 +5,8 @@ class DashboardController {
 
   async getWards(req, res, next) {
     try {
-      const nurses = await DashbordService.getWards();
-      res.status(201).json(nurses);
+      const wards = await DashbordService.getWards();
+      res.status(201).json(wards);
     } catch (error) {
       next(error);
     }

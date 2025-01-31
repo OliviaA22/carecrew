@@ -22,7 +22,7 @@ class PatientController {
   async getPatientsByHospital(req, res, next) {
     try {
       const patients = await PatientService.getPatientsByHospital(
-        req.params.hospitalId
+        req.params.hospital_id
       );
       res.status(200).json(patients);
     } catch (error) {
