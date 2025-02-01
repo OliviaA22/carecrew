@@ -74,17 +74,13 @@ class DashboardService {
   
   async getDashboardData(nurseId) {
     if (!nurseId) throw new Error("Nurse ID is required");
-  
-    // Retrieve the nurse's details, including their ward
-    const nurse = await User.findByPk(nurseId, {
+   const nurse = await User.findByPk(nurseId, {
       attributes: ["id", "first_name", "last_name", "ward_id"],
     });
   
     if (!nurse || !nurse.ward_id) {
       throw new Error("Nurse not found or ward ID is missing.");
     }
-  
-    // Fetch assigned patients along with their medication plans and medication items
     const assignedPatients = await Patient.findAll({
       where: { ward_id: nurse.ward_id },
       include: [
@@ -113,41 +109,6 @@ class DashboardService {
     return { assignedPatients };
   }
   
-  // async getDashboardData(nurseId) {
-  //   if (!nurseId) throw new Error("Nurse ID is required");
-  
-  //   // Retrieve the nurse's details, including their ward
-  //   const nurse = await db.User.findByPk(nurseId, {
-  //     attributes: ["id", "first_name", "last_name", "ward_id"],
-  //   });
-  
-  //   if (!nurse || !nurse.ward_id) {
-  //     throw new Error("Nurse not found or ward ID is missing.");
-  //   }
-  
-  //   // Fetch assigned patients along with their medication plans and medication items
-  //   const assignedPatients = await db.Patient.findAll({
-  //     where: { ward_id: nurse.ward_id },
-  //     include: [
-  //       {
-  //         model: db.MedicationPlan, // Include the medication plans for the patient
-  //         include: [
-  //           {
-  //             model: db.MedicationItem, // Include medication items within each plan
-  //             include: [
-  //               {
-  //                 model: db.Medication, // Include details of the medication (name, strength, etc.)
-  //                 attributes: ["id", "name", "strength", "dosage_form", "description"],
-  //               },
-  //             ],
-  //           },
-  //         ],
-  //       },
-  //     ],
-  //   });
-  
-  //   return { assignedPatients };
-  // }
 
 }
 
