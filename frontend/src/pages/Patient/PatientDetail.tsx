@@ -1,107 +1,129 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import PageLayout from "../../components/ui/layout/PageLayout";
-import { AiOutlineFullscreen } from "react-icons/ai";
-import { useLocation, useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
-
-interface Patient {
-  id: number;
-  first_name: string;
-  last_name: string;
-  room_no: number;
-  admission_date: string;
-  medical_record_number: string;
-  medication_plans: {
-    medication_name: string;
-    dosage: string;
-    frequency: string;
-  }[];
-}
+import axiosInstance from "../../axios/Axios";
+import { MedicationPlan, MedicationItem, Patient } from "../../data/Types";
+import MedicationSchedule from "../../components/ui/tables/MedicationSchedule";
+import MedicationHistory from "../../components/ui/tables/MedicationHistory";
 
 const PatientDetails: React.FC = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
   const { id } = useParams<{ id: string }>();
+  const [patient, setPatient] = useState<Patient | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Get patient data from location state
-  const patient = location.state?.patient;
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("de-DE", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
 
-  // If no patient data is found, you could fetch it here using the id
-  React.useEffect(() => {
-    if (!patient && id) {
-      // Fetch patient data using id
-      // Example: fetchPatientData(id).then(data => setPatient(data));
-    }
-  }, [patient, id]);
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const patientResponse = await axiosInstance.get(`/api/patients/${id}`);
+        setPatient(patientResponse.data);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        setError("Failed to load data. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // If no patient data is found, handle accordingly
-  if (!patient) {
+    fetchData();
+  }, [id]);
+
+  if (loading)
     return (
       <PageLayout text="Patient Details">
         <div>Loading patient data...</div>
       </PageLayout>
     );
-  }
+  if (error)
+    return (
+      <PageLayout text="Patient Details">
+        <div>{error}</div>
+      </PageLayout>
+    );
+  if (!patient)
+    return (
+      <PageLayout text="Patient Details">
+        <div>No patient data found.</div>
+      </PageLayout>
+    );
 
   return (
     <PageLayout text="Patient Details">
-      <div className="p-6 space-y-6">
-        {/* Patient Base Data */}
-        <div className="bg-blue-50 p-4 rounded-lg shadow-md">
-          <h2 className="text-2xl font-semibold">Patient Information</h2>
-          <p>
-            <strong>Name:</strong> {patient.first_name} {patient.last_name}
-          </p>
-          <p>
-            <strong>Room:</strong> {patient.room_no}
-          </p>
-          <p>
-            <strong>Medical Record Number:</strong>{" "}
-            {patient.medical_record_number}
-          </p>
-          <p>
-            <strong>Admission Date:</strong>{" "}
-            {new Date(patient.admission_date).toLocaleDateString()}
-          </p>
+      <div className="bg-gray-100 min-h-screen p-6">
+        <h1 className="text-3xl font-bold mb-6 text-gray-800">
+          {patient.first_name} {patient.last_name}
+        </h1>
+
+        {/* Basic Patient Info */}
+        <div className="bg-white shadow-md rounded-lg p-6 mb-8">
+          <h2 className="text-2xl font-semibold mb-4 text-blue-600">
+            Patient Information
+          </h2>
+          <div className="grid grid-cols-2 gap-6 divide-x divide-gray-200">
+            <div>
+              <p className="mb-2">
+                <span className="font-semibold">Date of Birth:</span>{" "}
+                {formatDate(patient.date_of_birth)}
+              </p>
+              <p className="mb-2">
+                <span className="font-semibold">Medical Record Number:</span>{" "}
+                {patient.medical_record_number}
+              </p>
+              <p className="mb-2">
+                <span className="font-semibold">Diagnosis:</span>{" "}
+                {patient.diagnosis}
+              </p>
+              <p className="mb-2">
+                <span className="font-semibold">Room Number:</span>{" "}
+                {patient.room_no}
+              </p>
+            </div>
+            <div className="pl-6">
+              <p className="mb-2">
+                <span className="font-semibold">Admission Date:</span>{" "}
+                {formatDate(patient.admission_date)}
+              </p>
+              <p className="mb-2">
+                <span className="font-semibold">Discharge Date:</span>{" "}
+                {patient.discharge_date
+                  ? formatDate(patient.discharge_date)
+                  : "Not discharged"}
+              </p>
+              <p className="mb-2">
+                <span className="font-semibold">Hospital:</span>{" "}
+                {patient.hospital.name}
+              </p>
+              <p className="mb-2">
+                <span className="font-semibold">Ward:</span> {patient.ward.name}
+              </p>
+            </div>
+          </div>
         </div>
 
-        {/* Medication Plans */}
-        <div className="bg-blue-50 p-4 rounded-lg shadow-md">
-          <h2 className="text-2xl font-semibold">Medication Plans</h2>
-          {patient.medication_plans.map(
-            (
-              plan: {
-                medication_name: string;
-                dosage: string;
-                frequency: string;
-              },
-              index: number
-            ) => (
-              <div key={index} className="mt-4 p-2 bg-white rounded">
-                <p>
-                  <strong>Medication:</strong> {plan.medication_name}
-                </p>
-                <p>
-                  <strong>Dosage:</strong> {plan.dosage}
-                </p>
-                <p>
-                  <strong>Frequency:</strong> {plan.frequency}
-                </p>
-              </div>
-            )
+        {/* Patient Notes */}
+        <div className="bg-white shadow-md rounded-lg p-6 mb-8">
+          <h2 className="text-2xl font-semibold mb-4 text-blue-600">
+            Patient Notes
+          </h2>
+          {patient.medication_plans[0]?.additional_notes ? (
+            <p>{patient.medication_plans[0].additional_notes}</p>
+          ) : (
+            <p>No additional notes available.</p>
           )}
         </div>
 
-        {/* Navigation Button */}
-        <div className="flex justify-end">
-          <button
-            onClick={() => navigate(-1)}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
-          >
-            Back
-            <AiOutlineFullscreen className="ml-2" />
-          </button>
-        </div>
+        <MedicationSchedule medicationPlans={patient.medication_plans} />
+        <MedicationHistory medicationPlans={patient.medication_plans} />
       </div>
     </PageLayout>
   );

@@ -1,19 +1,84 @@
-import React, { useState, useEffect } from "react";
+// NurseDashboard.tsx
+import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../../axios/Axios";
 import PageLayout from "../../components/ui/layout/PageLayout";
-import { useAuth } from "../../pages/LogIn/AuthContext"; // Adjust the import path as needed
+import { useAuth } from "../../pages/LogIn/AuthContext";
 import useFetchPatients from "../../data/useFetchPatients";
-import { Patient, MedicationPlan } from "../../data/Types";
+import { Patient, MedicationPlan, MedicationItem } from "../../data/Types";
+import MedicationAdminModal from "../../hooks/Medication/MedicationAdminModal";
+import {
+  getNextMedication,
+  isWithinTimeConstraints,
+} from "../../hooks/Medication/MedicationTimeFunctions";
+import MedicationConfirmation from "../../hooks/Medication/MedicationConfirmation";
+import { usePostMedicationAdministration } from "../../data/usePostMedicationAdministration";
 
 const NurseDashboard: React.FC = () => {
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [selectedMedication, setSelectedMedication] = useState<{
+    medication: MedicationItem;
+    patient: Patient;
+  } | null>(null);
+  const [confirmationData, setConfirmationData] = useState<{
+    status: string;
+    reason: string;
+  } | null>(null);
   const navigate = useNavigate();
   const { userData } = useAuth();
   const { patients, loading, error } = useFetchPatients(userData);
 
+  const sortedPatients = useMemo(() => {
+    return patients.sort((a, b) => {
+      const aNextMed = getNextMedication(a);
+      const bNextMed = getNextMedication(b);
+      if (!aNextMed && !bNextMed) return 0;
+      if (!aNextMed) return 1;
+      if (!bNextMed) return -1;
+      return aNextMed.scheduled_time.localeCompare(bNextMed.scheduled_time);
+    });
+  }, [patients]);
+
   const handlePatientSelect = (patient: Patient) => {
     setSelectedPatient(selectedPatient === patient ? null : patient);
+  };
+
+  const handleMedicationClick = (
+    medication: MedicationItem,
+    patient: Patient
+  ) => {
+    /*
+    if (!isWithinTimeConstraints(medication.scheduled_time)) {
+      alert("It's too early to administer this medication.");
+      return;
+    }
+    */
+    setSelectedMedication({ medication, patient });
+  };
+  const handleMedicationConfirm = (status: string, reason: string) => {
+    setConfirmationData({ status, reason });
+  };
+
+  const handleFinalConfirmation = async () => {
+    if (!selectedMedication || !confirmationData) return;
+
+    try {
+      await usePostMedicationAdministration({
+        medication: selectedMedication.medication,
+        patient: selectedMedication.patient,
+        status: confirmationData.status,
+        reason: confirmationData.reason,
+      });
+
+      console.log(
+        `Medication ${selectedMedication.medication.medication.name} ${confirmationData.status}. Reason: ${confirmationData.reason}`
+      );
+      setSelectedMedication(null);
+      setConfirmationData(null);
+      // Add code to refresh dashboard data here
+    } catch (error) {
+      console.error("Error creating medication administration:", error);
+      // Handle error (e.g., show error message to user)
+    }
   };
 
   if (loading) return <div>Loading...</div>;
@@ -45,39 +110,57 @@ const NurseDashboard: React.FC = () => {
               Upcoming Medication Administration
             </h1>
             <div className="flex flex-col gap-2">
-              {patients.length > 0 ? (
-                patients.map((patient) => (
-                  <button
-                    key={patient.id}
-                    onClick={() => handlePatientSelect(patient)}
-                    className={`flex flex-row items-center justify-between 
-                      border-b border-blue-100 py-2 
-                      transition-colors 
-                      duration-200 
-                      w-full 
-                      text-left 
-                      focus:outline-big 
-                      focus:ring-2 
-                      focus:ring-red-800 
-                      rounded-lg
-                      ${
-                        selectedPatient === patient
-                          ? "bg-red-200 text-red-800"
-                          : "hover:bg-red-100"
-                      }`}
-                  >
-                    <div className="flex flex-col">
-                      <h2 className="font-medium">{`${patient.first_name} ${patient.last_name}`}</h2>
-                      <span className="text-sm text-gray-500">
-                        Room {patient.room_no}
-                      </span>
+              {sortedPatients.length > 0 ? (
+                sortedPatients.map((patient) => {
+                  const nextMed = getNextMedication(patient);
+                  return (
+                    <div
+                      key={patient.id}
+                      className={`flex flex-row items-center justify-between 
+              border-b border-blue-100 py-2 
+              transition-colors 
+              duration-200 
+              w-full 
+              text-left 
+              focus:outline-big 
+              focus:ring-2 
+              focus:ring-red-800 
+              rounded-lg
+              ${
+                selectedPatient === patient
+                  ? "bg-red-200 text-red-800"
+                  : "hover:bg-red-100"
+              }`}
+                    >
+                      <div
+                        className="flex flex-col cursor-pointer"
+                        onClick={() => handlePatientSelect(patient)}
+                      >
+                        <h2 className="font-medium">{`${patient.first_name} ${patient.last_name}`}</h2>
+                        <span className="text-sm text-gray-500">
+                          Room {patient.room_no}
+                        </span>
+                      </div>
+                      <div className="flex flex-col items-end">
+                        <div className="text-gray-600">
+                          {nextMed
+                            ? `${nextMed.scheduled_time} - ${nextMed.medication.name} ${nextMed.dose}`
+                            : "No upcoming medication"}
+                        </div>
+                        {nextMed && (
+                          <button
+                            className="mt-2 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                            onClick={() =>
+                              handleMedicationClick(nextMed, patient)
+                            }
+                          >
+                            Administer
+                          </button>
+                        )}
+                      </div>
                     </div>
-                    <div className="text-gray-600">
-                      Admitted:{" "}
-                      {new Date(patient.admission_date).toLocaleDateString()}
-                    </div>
-                  </button>
-                ))
+                  );
+                })
               ) : (
                 <p>No patients found</p>
               )}
@@ -91,10 +174,8 @@ const NurseDashboard: React.FC = () => {
                 <h2 className="font-semibold text-xl">Patient Details</h2>
                 <button
                   onClick={() =>
-                    window.open(
-                      `/details/${selectedPatient.id}`,
-                      "_blank",
-                      "noopener,noreferrer"
+                    navigate(
+                      `/details/${selectedPatient.id}/medication/${selectedPatient.medication_plans[0]?.id}`
                     )
                   }
                   className="text-blue-500 hover:text-blue-700 transition-colors"
@@ -122,7 +203,13 @@ const NurseDashboard: React.FC = () => {
                   {selectedPatient.last_name}
                 </p>
                 <p>
+                  <strong>Ward ID:</strong> {selectedPatient.ward.name}
+                </p>
+                <p>
                   <strong>Room:</strong> {selectedPatient.room_no}
+                </p>
+                <p>
+                  <strong>Diagnosis:</strong> {selectedPatient.diagnosis}
                 </p>
                 <p>
                   <strong>Medical Record Number:</strong>{" "}
@@ -130,31 +217,59 @@ const NurseDashboard: React.FC = () => {
                 </p>
                 <p>
                   <strong>Admission Date:</strong>{" "}
-                  {new Date(
-                    selectedPatient.admission_date
-                  ).toLocaleDateString()}
+                  {selectedPatient.admission_date}
                 </p>
                 <h3 className="font-semibold mt-4">Medication Plans</h3>
-                {(selectedPatient.medication_plans || []).map(
-                  (plan: MedicationPlan, index: number) => (
-                    <div key={index} className="bg-white p-2 rounded">
-                      <p>
-                        <strong>Medication:</strong> {plan.medication_name}
-                      </p>
-                      <p>
-                        <strong>Dosage:</strong> {plan.dosage}
-                      </p>
-                      <p>
-                        <strong>Frequency:</strong> {plan.frequency}
-                      </p>
-                    </div>
-                  )
-                )}
+                {selectedPatient.medication_plans.map((plan, index) => (
+                  <div key={index} className="bg-white p-2 rounded mt-2">
+                    <p>
+                      <strong>Plan ID:</strong> {plan.id}
+                    </p>
+                    <p>
+                      <strong>Additional Notes:</strong> {plan.additional_notes}
+                    </p>
+                    <h4 className="font-medium mt-2">Medications</h4>
+                    {plan.medication_items.map((item, itemIndex) => (
+                      <div key={itemIndex} className="ml-4 mt-1">
+                        <p>
+                          {item.medication.name} - {item.dose}
+                        </p>
+                        <p>
+                          Scheduled: {item.scheduled_time}, Status:{" "}
+                          {item.status}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                ))}
               </div>
             </div>
           )}
         </div>
       </div>
+      {selectedMedication && !confirmationData && (
+        <MedicationAdminModal
+          medication={selectedMedication.medication}
+          patient={selectedMedication.patient}
+          canOnlyMarkNotGiven={
+            !isWithinTimeConstraints(
+              selectedMedication.medication.scheduled_time
+            )
+          }
+          onClose={() => setSelectedMedication(null)}
+          onConfirm={handleMedicationConfirm}
+        />
+      )}
+      {selectedMedication && confirmationData && (
+        <MedicationConfirmation
+          medication={selectedMedication.medication}
+          patient={selectedMedication.patient}
+          status={confirmationData.status}
+          reason={confirmationData.reason}
+          onConfirm={handleFinalConfirmation}
+          onCancel={() => setConfirmationData(null)}
+        />
+      )}
     </PageLayout>
   );
 };

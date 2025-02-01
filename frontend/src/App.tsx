@@ -4,9 +4,6 @@ import { AuthProvider } from "./pages/LogIn/AuthContext";
 import PrivateRoute from "./pages/LogIn/PrivateRoute";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "vite/modulepreload-polyfill";
-import ManageAppointments from "./pages/Admin/manageAppointments";
-import ManageDoctors from "./pages/Admin/manageDoctors";
-import ManagePatients from "./pages/Admin/managePatients";
 import AdminDashboard from "./pages/Admin/adminDashboard";
 import Home from "./pages/Home/Home";
 import SignUp from "./pages/Home/SignIn";
@@ -14,6 +11,8 @@ import SignIn from "./pages/LogIn/LoginIn";
 import NurseDashboard from "./pages/Nurse/nurseDashboard";
 import PatientDetails from "./pages/Patient/PatientDetail";
 import PatientList from "./pages/Patient/PatientList";
+import ManageNurses from "./pages/Admin/manageNurses";
+import NotificationsPage from "./pages/News/NotificationsPage";
 
 const queryClient = new QueryClient();
 
@@ -54,28 +53,19 @@ const App = () => {
               }
             />
             <Route
-              path="/appointments"
+              path="/news"
               element={
                 <PrivateRoute
-                  element={<ManageAppointments />}
-                  requiredRoles={["admin"]}
+                  element={<NotificationsPage />}
+                  requiredRoles={["nurse"]}
                 />
               }
             />
             <Route
-              path="/settings"
+              path="/nurses"
               element={
                 <PrivateRoute
-                  element={<ManageAppointments />}
-                  requiredRoles={["admin"]}
-                />
-              }
-            />
-            <Route
-              path="/doctors"
-              element={
-                <PrivateRoute
-                  element={<ManageDoctors />}
+                  element={<ManageNurses />}
                   requiredRoles={["admin"]}
                 />
               }

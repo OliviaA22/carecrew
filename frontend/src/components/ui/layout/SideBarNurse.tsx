@@ -27,11 +27,6 @@ const SideBar: React.FC = () => {
       icon: <MdManageAccounts size={28} />,
     },
     {
-      name: "Nurses",
-      link: "/nurses",
-      icon: <FaUserDoctor size={24} />,
-    },
-    {
       name: "News",
       link: "/news",
       icon: <MdOutlineManageHistory size={22} />,
