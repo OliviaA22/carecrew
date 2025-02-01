@@ -12,6 +12,15 @@ class DashboardController {
     }
   }
 
+  async getMedications(req, res, next) {
+    try {
+      const medications = await DashbordService.getMedications();
+      res.status(201).json(medications);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async getHospitals(req, res, next) {
     try {
       const hospitals = await DashbordService.getHospitals();
@@ -42,12 +51,16 @@ class DashboardController {
         next(error);
       }
     }
-    /**
-   * Fetch dashboard data for the logged-in nurse.
-   * @param {Request} req - Express request object.
-   * @param {Response} res - Express response object.
-   * @param {Function} next - Express next middleware function.
-   */
+
+    async getMedicationById(req, res, next) {
+      try {
+        const medication = await DashbordService.getMedicationById(req.params.id);
+        res.status(201).json(medication);
+      } catch (error) {
+        next(error);
+      }
+    }
+
     async getDashboardData(req, res, next) {
       try {
         const dashboardData = await DashbordService.getDashboardData(req.user.id);

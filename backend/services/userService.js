@@ -49,7 +49,6 @@ class UserService {
 
   async getUserById(userId) {
     const user = await User.findByPk(userId);
-    // return user;
     return user;
   }
 

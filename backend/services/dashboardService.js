@@ -26,6 +26,11 @@ class DashboardService {
     return wards;
   }
 
+  async getMedications() {
+    const medications = await Medication.findAll();
+    return medications;
+  }
+
   async getNurses() {
     const nurse = await User.findAll({
       where: {
@@ -71,6 +76,10 @@ class DashboardService {
     });
   }
 
+  async getMedicationById(medId) {
+    const medication = await Medication.findByPk(medId);
+    return medication;
+  }
   
   async getDashboardData(nurseId) {
     if (!nurseId) throw new Error("Nurse ID is required");
