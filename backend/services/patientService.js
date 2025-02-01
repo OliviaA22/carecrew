@@ -77,7 +77,22 @@ class PatientService {
     const patient = await Patient.findByPk(patientId, {
       include: [
         { model: Ward, attributes: ["name"] },
-        { model: Hospital, attributes: ["name"] },
+        { model: Hospital, attributes: ["name"], },
+        {
+          model: MedicationPlan,
+          attributes: ["id", "name", "valid_from", "valid_until", "additional_notes"],
+          include: [
+            {
+              model: MedicationItem,
+              include: [
+                {
+                  model: Medication,
+                  attributes: ["id", "name", "description", "dosage_form"], 
+                },
+              ],
+            },
+          ],
+        },
       ],
     });
 
