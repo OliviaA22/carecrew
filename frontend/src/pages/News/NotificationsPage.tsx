@@ -3,6 +3,7 @@ import { useAuth } from "../../pages/LogIn/AuthContext";
 import PageLayout from "../../components/ui/layout/PageLayout";
 import axios from "axios";
 import axiosInstance from "../../axios/Axios";
+import { useNotifications } from "../../hooks/Notifications/NotificationProvider";
 
 interface Notification {
   id: number;
@@ -29,17 +30,15 @@ const NotificationsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { userData } = useAuth();
+  const { notifications, markAsRead } = useNotifications();
 
-  const getItemTimestamp = (item: unknown): string => {
-    if (typeof item === "object" && item !== null) {
-      if ("created_at" in item && typeof item.created_at === "string") {
-        return item.created_at;
-      } else if ("start_time" in item && typeof item.start_time === "string") {
-        return item.start_time;
-      }
+  const getItemTimestamp = (item: TimelineItem): string => {
+    if ("created_at" in item) {
+      return item.created_at;
+    } else if ("start_time" in item) {
+      return item.start_time;
     }
-    console.error("Invalid item type:", item);
-    return ""; // Return an empty string for invalid items
+    return "";
   };
 
   useEffect(() => {
@@ -53,39 +52,24 @@ const NotificationsPage: React.FC = () => {
         }
 
         const [notificationsResponse, shiftsResponse] = await Promise.all([
-          axios.get<Notification[]>("/api/notifications/ward", {
+          axiosInstance.get<Notification[]>("/api/notifications/ward", {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get<Shift[]>("/api/shifts", {
+          axiosInstance.get<Shift[]>("/api/shifts", {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
 
-        console.log("Raw notifications:", notificationsResponse.data);
-        console.log("Raw shifts:", shiftsResponse.data);
+        const notifications = notificationsResponse.data;
+        const shifts = shiftsResponse.data;
 
-        const notifications = Array.isArray(notificationsResponse.data)
-          ? notificationsResponse.data
-          : [];
-        const shifts = Array.isArray(shiftsResponse.data)
-          ? shiftsResponse.data
-          : [];
-
-        const combinedItems = [...notifications, ...shifts]
-          .filter(
-            (item): item is TimelineItem =>
-              typeof item === "object" && item !== null
-          )
-          .sort((a, b) => {
-            const timestampA = getItemTimestamp(a);
-            const timestampB = getItemTimestamp(b);
-            if (timestampA && timestampB) {
-              return (
-                new Date(timestampB).getTime() - new Date(timestampA).getTime()
-              );
-            }
-            return 0;
-          });
+        const combinedItems = [...notifications, ...shifts].sort((a, b) => {
+          const timestampA = getItemTimestamp(a);
+          const timestampB = getItemTimestamp(b);
+          return (
+            new Date(timestampB).getTime() - new Date(timestampA).getTime()
+          );
+        });
 
         setTimelineItems(combinedItems);
       } catch (err) {
@@ -149,6 +133,9 @@ const NotificationsPage: React.FC = () => {
               </div>
             )}
           </div>
+          {!item.is_read && (
+            <button onClick={() => markAsRead(item.id)}>Mark as Read</button>
+          )}
         </li>
       );
     } else {
@@ -161,7 +148,9 @@ const NotificationsPage: React.FC = () => {
             <div className="flex-shrink-0 text-2xl">{getItemIcon(item)}</div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-gray-900 truncate">
-                {`${item.user.first_name} ${item.user.last_name}'s shift`}
+                {item.user
+                  ? `${item.user.first_name} ${item.user.last_name}'s shift`
+                  : "Unknown user's shift"}
               </p>
               <p className="text-sm text-gray-500">
                 {`${new Date(item.start_time).toLocaleString()} - ${new Date(

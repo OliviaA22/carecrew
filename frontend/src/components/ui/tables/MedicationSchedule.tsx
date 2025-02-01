@@ -1,13 +1,28 @@
-import React from "react";
-import { MedicationItem, MedicationPlan } from "../../../data/Types";
+import React, { useState } from "react";
+import { MedicationItem, MedicationPlan, Patient } from "../../../data/Types";
+import MedicationAdminModal from "../../../hooks/Medication/MedicationAdminModal";
+import MedicationConfirmation from "../../../hooks/Medication/MedicationConfirmation";
+import { useAuth } from "../../../pages/LogIn/AuthContext";
+import { usePostMedicationAdministration } from "../../../data/usePostMedicationAdministration";
 
 interface MedicationScheduleProps {
   medicationPlans: MedicationPlan[];
+  patient: Patient;
 }
 
 const MedicationSchedule: React.FC<MedicationScheduleProps> = ({
   medicationPlans,
+  patient,
 }) => {
+  const [selectedMedication, setSelectedMedication] =
+    useState<MedicationItem | null>(null);
+  const [showAdminModal, setShowAdminModal] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [administrationStatus, setAdministrationStatus] = useState("");
+  const [administrationReason, setAdministrationReason] = useState("");
+  const { userData } = useAuth();
+  const { postMedicationAdministration } = usePostMedicationAdministration();
+
   const groupAndFilterMedications = (
     medications: MedicationItem[],
     status: string
@@ -22,6 +37,44 @@ const MedicationSchedule: React.FC<MedicationScheduleProps> = ({
       }, {});
   };
 
+  const handleAdminister = (medication: MedicationItem) => {
+    setSelectedMedication(medication);
+    setShowAdminModal(true);
+  };
+
+  const handleAdminConfirm = (status: string, reason: string) => {
+    setAdministrationStatus(status);
+    setAdministrationReason(reason);
+    setShowAdminModal(false);
+    setShowConfirmationModal(true);
+  };
+
+  const handleConfirmationComplete = async () => {
+    if (!selectedMedication || !userData) return;
+
+    try {
+      await postMedicationAdministration({
+        medication: selectedMedication,
+        patient: patient,
+        status: administrationStatus,
+        reason: administrationReason,
+      });
+
+      console.log(
+        `Medication ${selectedMedication.medication.name} ${administrationStatus}. Reason: ${administrationReason}`
+      );
+      // Here you would typically update the medication status in your state or refetch the data
+    } catch (error) {
+      console.error("Error creating medication administration:", error);
+      // Handle error (e.g., show error message to user)
+    } finally {
+      setShowConfirmationModal(false);
+      setSelectedMedication(null);
+      setAdministrationStatus("");
+      setAdministrationReason("");
+    }
+  };
+
   const renderMedicationScheduleTable = (
     medications: Record<string, MedicationItem>
   ) => (
@@ -33,6 +86,7 @@ const MedicationSchedule: React.FC<MedicationScheduleProps> = ({
           <th className="p-3 text-left font-semibold">Frequency</th>
           <th className="p-3 text-left font-semibold">Route</th>
           <th className="p-3 text-left font-semibold">Next Administration</th>
+          <th className="p-3 text-left font-semibold">Action</th>
         </tr>
       </thead>
       <tbody>
@@ -43,6 +97,14 @@ const MedicationSchedule: React.FC<MedicationScheduleProps> = ({
             <td className="p-3">{item.frequency}</td>
             <td className="p-3">{item.route_of_administration}</td>
             <td className="p-3">{item.scheduled_time}</td>
+            <td className="p-3">
+              <button
+                onClick={() => handleAdminister(item)}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              >
+                Administer
+              </button>
+            </td>
           </tr>
         ))}
       </tbody>
@@ -76,6 +138,27 @@ const MedicationSchedule: React.FC<MedicationScheduleProps> = ({
           </div>
         );
       })}
+
+      {showAdminModal && selectedMedication && (
+        <MedicationAdminModal
+          medication={selectedMedication}
+          patient={patient}
+          canOnlyMarkNotGiven={false}
+          onClose={() => setShowAdminModal(false)}
+          onConfirm={handleAdminConfirm}
+        />
+      )}
+
+      {showConfirmationModal && selectedMedication && (
+        <MedicationConfirmation
+          medication={selectedMedication}
+          patient={patient}
+          status={administrationStatus}
+          reason={administrationReason}
+          onConfirm={handleConfirmationComplete}
+          onCancel={() => setShowConfirmationModal(false)}
+        />
+      )}
     </div>
   );
 };

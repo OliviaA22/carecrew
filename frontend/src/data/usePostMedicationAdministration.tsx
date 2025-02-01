@@ -9,12 +9,7 @@ interface PostMedicationAdministrationParams {
   reason: string;
 }
 
-export const usePostMedicationAdministration = (p0: {
-  medication: MedicationItem;
-  patient: Patient;
-  status: string;
-  reason: string;
-}) => {
+export const usePostMedicationAdministration = () => {
   const { userData } = useAuth();
 
   const postMedicationAdministration = async (

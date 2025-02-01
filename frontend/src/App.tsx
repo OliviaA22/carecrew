@@ -13,74 +13,92 @@ import PatientDetails from "./pages/Patient/PatientDetail";
 import PatientList from "./pages/Patient/PatientList";
 import ManageNurses from "./pages/Admin/manageNurses";
 import NotificationsPage from "./pages/News/NotificationsPage";
+import {
+  NotificationProvider,
+  useNotifications,
+} from "./hooks/Notifications/NotificationProvider";
+import NotificationPopup from "./hooks/Notifications/NotificationPopUp";
 
 const queryClient = new QueryClient();
 
-const App = () => {
+const AppContent: React.FC = () => {
+  const { notifications, showPopup, setShowPopup } = useNotifications();
+
+  return (
+    <Router>
+      {showPopup && notifications.length > 0 && (
+        <NotificationPopup
+          notification={notifications[notifications.length - 1]}
+          onClose={() => setShowPopup(false)}
+        />
+      )}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/signin" element={<SignIn />} />
+        <Route
+          path="/admindashboard"
+          element={
+            <PrivateRoute
+              element={<AdminDashboard />}
+              requiredRoles={["admin"]}
+            />
+          }
+        />
+        <Route
+          path="/details/:id"
+          element={
+            <PrivateRoute
+              element={<PatientDetails />}
+              requiredRoles={["nurse"]}
+            />
+          }
+        />
+        <Route
+          path="/nursedashboard"
+          element={
+            <PrivateRoute
+              element={<NurseDashboard />}
+              requiredRoles={["nurse"]}
+            />
+          }
+        />
+        <Route
+          path="/news"
+          element={
+            <PrivateRoute
+              element={<NotificationsPage />}
+              requiredRoles={["nurse"]}
+            />
+          }
+        />
+        <Route
+          path="/nurses"
+          element={
+            <PrivateRoute
+              element={<ManageNurses />}
+              requiredRoles={["admin"]}
+            />
+          }
+        />
+        <Route
+          path="/patients"
+          element={
+            <PrivateRoute element={<PatientList />} requiredRoles={["nurse"]} />
+          }
+        />
+      </Routes>
+    </Router>
+  );
+};
+
+const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="/signin" element={<SignIn />} />
-            <Route
-              path="/admindashboard"
-              element={
-                <PrivateRoute
-                  element={<AdminDashboard />}
-                  requiredRoles={["admin"]}
-                />
-              }
-            />
-            <Route
-              path="/details/:id"
-              element={
-                <PrivateRoute
-                  element={<PatientDetails />}
-                  requiredRoles={["nurse"]}
-                />
-              }
-            />
-            <Route
-              path="/nursedashboard"
-              element={
-                <PrivateRoute
-                  element={<NurseDashboard />}
-                  requiredRoles={["nurse"]}
-                />
-              }
-            />
-            <Route
-              path="/news"
-              element={
-                <PrivateRoute
-                  element={<NotificationsPage />}
-                  requiredRoles={["nurse"]}
-                />
-              }
-            />
-            <Route
-              path="/nurses"
-              element={
-                <PrivateRoute
-                  element={<ManageNurses />}
-                  requiredRoles={["admin"]}
-                />
-              }
-            />
-            <Route
-              path="/patients"
-              element={
-                <PrivateRoute
-                  element={<PatientList />}
-                  requiredRoles={["nurse"]}
-                />
-              }
-            />
-          </Routes>
-        </Router>
+        <NotificationProvider>
+          <AppContent />
+        </NotificationProvider>
       </AuthProvider>
     </QueryClientProvider>
   );

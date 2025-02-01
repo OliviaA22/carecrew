@@ -34,6 +34,19 @@ export interface LoginResponse {
   token: string;
 }
 
+export interface Shift {
+  id: number;
+  nurse_id: number;
+  start_time: string;
+  end_time: string | null;
+  status: "in progress" | "completed";
+  notes: string | null;
+  user?: {
+    first_name: string;
+    last_name: string;
+  };
+}
+
 export interface Patient {
   id: number;
   ward_id: number;
@@ -96,12 +109,32 @@ export interface Notification {
   is_read: boolean;
 }
 
-export interface Shift {
+export interface PatientNotification {
   id: number;
-  start_time: string;
-  end_time: string;
-  user: {
+  message: string;
+  notification_type: "task" | "reminder" | "alert";
+  is_read: boolean;
+  created_at: string;
+}
+
+export interface Notification {
+  id: number;
+  message: string;
+  created_at: string;
+  notification_type: "task" | "reminder" | "alert";
+  is_read: boolean;
+  patient: {
+    id: number;
     first_name: string;
     last_name: string;
+  };
+  medication_item: {
+    id: number;
+    scheduled_time: string;
+    status: string;
+    medication_plan: {
+      id: number;
+      name: string;
+    };
   };
 }

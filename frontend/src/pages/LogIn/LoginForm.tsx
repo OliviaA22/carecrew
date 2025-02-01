@@ -6,7 +6,7 @@ import { useAuth } from "./AuthContext";
 
 const LoginForm: React.FC = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, startShift } = useAuth();
   const [error, setError] = useState<string | null>(null);
 
   const fields: FormField[] = [
@@ -35,7 +35,10 @@ const LoginForm: React.FC = () => {
         const userData = response.data;
         login(userData);
 
-        if (userData.role === "admin") {
+        // Start shift after successful login
+        await startShift();
+
+        if (userData.user.role === "admin") {
           navigate("/admindashboard");
         } else {
           navigate("/nursedashboard");
