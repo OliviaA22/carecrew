@@ -32,18 +32,18 @@ class UserService {
 
 
   async getNurses() {
-    const nurse = await User.findAll({
+    const nurses = await User.findAll({
       where: {
         role: "nurse",
       },
       include: [
         {
           model: Ward,
-          attributes: ["name"], // Only include ward name
+          attributes: ["name"], 
         },
       ],
     });
-    return nurse;
+    return nurses;
   }
 
 
