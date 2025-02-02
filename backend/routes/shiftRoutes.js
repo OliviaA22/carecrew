@@ -10,7 +10,7 @@ shiftRouter.get("/", authenticateUser, shiftController.getShifts);
 
 shiftRouter.post("/start", authenticateUser, shiftController.startShift);
 
-shiftRouter.post("/end", authenticateUser, shiftController.endShift);
+shiftRouter.put("/end", authenticateUser, shiftController.endShift);
 
 
 module.exports = shiftRouter;

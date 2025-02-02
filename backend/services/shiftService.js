@@ -23,7 +23,6 @@ class ShiftService {
       nurse_id: nurseId,
       start_time: new Date(),
       status: "in progress",
-      notes,
     });
 
     return newShift;
