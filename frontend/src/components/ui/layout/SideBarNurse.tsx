@@ -6,13 +6,7 @@ import {
   MdManageAccounts,
   MdOutlineManageHistory,
   MdOutlineHome,
-  MdPerson,
 } from "react-icons/md";
-import { useAuth } from "../../../pages/LogIn/AuthContext";
-
-interface SideBarProps {
-  role?: string;
-}
 
 interface NavLinkItem {
   name: string;
@@ -20,44 +14,24 @@ interface NavLinkItem {
   icon: JSX.Element;
 }
 
-const SideBar: React.FC<SideBarProps> = ({ role }) => {
-  const { userData } = useAuth(); // Get user data from AuthContext
-
-  const getNavLinks = (): NavLinkItem[] => {
-    const commonLinks: NavLinkItem[] = [
-      {
-        name: "Dashboard",
-        link:
-          userData?.role === "admin" ? "/admindashboard" : "/nursedashboard",
-        icon: <LuLayoutDashboard size={20} />,
-      },
-      {
-        name: "Patients",
-        link: "/patients",
-        icon: <MdPerson size={24} />,
-      },
-      {
-        name: "News",
-        link: "/news",
-        icon: <MdOutlineManageHistory size={22} />,
-      },
-    ];
-
-    if (userData?.role === "admin") {
-      return [
-        ...commonLinks,
-        {
-          name: "Nurses",
-          link: "/nurses",
-          icon: <FaUserDoctor size={24} />,
-        },
-      ];
-    }
-
-    return commonLinks;
-  };
-
-  const navLinks = getNavLinks();
+const SideBar: React.FC = () => {
+  const navLinks: NavLinkItem[] = [
+    {
+      name: "Dashboard",
+      link: "/nursedashboard",
+      icon: <LuLayoutDashboard size={20} />,
+    },
+    {
+      name: "Patients",
+      link: "/patients",
+      icon: <MdManageAccounts size={28} />,
+    },
+    {
+      name: "News",
+      link: "/news",
+      icon: <MdOutlineManageHistory size={22} />,
+    },
+  ];
 
   return (
     <div className="w-[262px] h-screen py-4 px-4 flex flex-col bg-blue-600">

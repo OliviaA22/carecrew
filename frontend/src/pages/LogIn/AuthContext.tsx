@@ -6,14 +6,17 @@ import React, {
   useEffect,
 } from "react";
 import axiosInstance from "../../axios/Axios";
-import { LoginResponse, User } from "../../data/Types";
+import { LoginResponse, Shift, User } from "../../data/Types";
 
 interface AuthContextType {
   isAuthenticated: boolean;
   userData: User | null;
-  login: (data: LoginResponse) => void; // Changed from User to LoginResponse
+  currentShift: Shift | null;
+  login: (data: LoginResponse) => void;
   logout: () => Promise<void>;
   checkAuth: () => Promise<boolean>;
+  startShift: () => Promise<void>;
+  endShift: (notes: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -21,6 +24,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userData, setUserData] = useState<User | null>(null);
+  const [currentShift, setCurrentShift] = useState<Shift | null>(null);
 
   const checkAuth = async () => {
     try {
@@ -37,6 +41,58 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // In your API service file (e.g., api.ts)
+  const checkActiveShift = async (userId: number) => {
+    try {
+      const response = await axiosInstance.get(`/api/shifts/active/${userId}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error checking active shift:", error);
+      throw error;
+    }
+  };
+
+  const startShift = async () => {
+    if (!userData) {
+      throw new Error("User not authenticated");
+    }
+
+    try {
+      // Check for active shift
+      const activeShift = await checkActiveShift(userData.id);
+
+      if (activeShift) {
+        // If there's an active shift, set it as current and return
+        setCurrentShift(activeShift);
+        return activeShift;
+      }
+
+      // If no active shift, start a new one
+      const response = await axiosInstance.post<Shift>("/api/shifts/start");
+      setCurrentShift(response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error starting shift:", error);
+      throw error;
+    }
+  };
+
+  const endShift = async (notes: string) => {
+    if (!currentShift) {
+      throw new Error("No active shift to end");
+    }
+    try {
+      await axiosInstance.post("/api/shifts/end", {
+        shiftId: currentShift.id,
+        notes,
+      });
+      setCurrentShift(null);
+    } catch (error) {
+      console.error("Error ending shift:", error);
+      throw error;
+    }
+  };
+
   useEffect(() => {
     checkAuth();
   }, []);
@@ -50,17 +106,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = async () => {
     try {
+      if (currentShift) {
+        await endShift("Shift ended due to logout");
+      }
       await axiosInstance.post("/api/auth/logout");
     } catch (error) {
       console.error("Logout request failed:", error);
     }
     setUserData(null);
     setIsAuthenticated(false);
+    setCurrentShift(null);
   };
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, userData, login, logout, checkAuth }}
+      value={{
+        isAuthenticated,
+        userData,
+        currentShift,
+        login,
+        logout,
+        checkAuth,
+        startShift,
+        endShift,
+      }}
     >
       {children}
     </AuthContext.Provider>

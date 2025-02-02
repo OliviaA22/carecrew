@@ -1,26 +1,3 @@
-export interface Address {
-  street: string;
-  city: string;
-  state: string;
-  country: string;
-  postcode: string;
-}
-
-export interface Language {
-  id: number;
-  language_name: string;
-}
-
-export interface Specialization {
-  id: number;
-  area_of_specialization: string;
-}
-
-export interface Location {
-  latitude: number;
-  longitude: number;
-}
-
 export interface User {
   id: number;
   first_name: string;
@@ -57,38 +34,107 @@ export interface LoginResponse {
   token: string;
 }
 
-export interface Patient extends User {
+export interface Shift {
+  id: number;
+  nurse_id: number;
+  start_time: string;
+  end_time: string | null;
+  status: "in progress" | "completed";
+  notes: string | null;
+  user?: {
+    first_name: string;
+    last_name: string;
+  };
+}
+
+export interface Patient {
+  id: number;
+  ward_id: number;
+  ward: Ward; // Change this to use the Ward interface
+  hospital_id: number;
+  hospital: { name: string }; // Change this to an object with a name property
   room_no: string;
-  nextMedicationTime: string;
-  admission_date: Date;
+  first_name: string;
+  last_name: string;
+  date_of_birth: string;
+  admission_date: string;
+  discharge_date: string | null;
+  diagnosis: string;
   medical_record_number: string;
   medication_plans: MedicationPlan[];
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface MedicationPlan {
-  medication_name: string;
-  dosage: string;
+  id: number;
+  name: string;
+  additional_notes: string;
+  medication_items: MedicationItem[];
+  valid_from: string;
+  valid_until: string;
+}
+
+export interface MedicationItem {
+  id: number;
+  plan_id: number;
+  medication_id: number;
+  time_administered: Date;
+  administered_by: string;
+  dose: string;
   frequency: string;
+  route_of_administration: string;
+  scheduled_time: string;
+  start_date: string;
+  end_date: string;
+  status: string;
+  instructions: string;
+  createdAt: string;
+  updatedAt: string;
+  medication: {
+    id: number;
+    name: string;
+    description: string;
+    dosage_form: string;
+    strength: string;
+  };
 }
 
-export interface Availability {
+export interface Notification {
   id: number;
-  doctor_id: number;
-  availability_date: string;
-  active: boolean;
+  message: string;
+  created_at: string;
+  type: string;
+  is_read: boolean;
 }
 
-export interface AppointmentReason {
-  reason?: string;
-  notes?: string;
-}
-
-export interface Appointment {
+export interface PatientNotification {
   id: number;
-  appointmentDate: string;
-  appointmentReason: AppointmentReason;
-  bookTranslation: boolean;
-  completed: boolean;
-  patient: Patient; // Make patient properties optional
-  availability: Availability;
+  message: string;
+  notification_type: "task" | "reminder" | "alert";
+  is_read: boolean;
+  created_at: string;
+}
+
+export interface Notification {
+  id: number;
+  message: string;
+  created_at: string;
+  notification_type: "task" | "reminder" | "alert";
+  is_read: boolean;
+  patient: {
+    id: number;
+    first_name: string;
+    last_name: string;
+  };
+  medication_item: {
+    id: number;
+    scheduled_time: string;
+    status: string;
+    medication_plan: {
+      id: number;
+      name: string;
+    };
+  };
 }

@@ -36,7 +36,7 @@ export const API_ENDPOINTS = {
   GET_USERS_COUNT: "/api/dashboard/users-count",
 
   // Users
-  GET_DOCTORS: "/api/users/",
+  GET_USERS: "/api/users",
   CREATE_USER: "/api/users/admin-create",
   GET_PATIENTS: "/api/users/patients",
   GET_ALL_USERS: "/api/users/all-users",
