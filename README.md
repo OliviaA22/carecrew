@@ -87,7 +87,7 @@ CareCrew leverages a **scalable and efficient technology stack** to provide a **
     ```
 
     To open the frontend in developer mode do `npx vite` from the frontend directory and the page opens automatically. otherwise, run `npm start`
-    The admin access to the website is email `olivia@mail.com` and password: `securePassword123`
+    The admin access to the website is email `olivia.okoro@mail.com` and password: `securePassword123`
 
 4. **Set up environment variables:**
    - The backend uses some APIs and variables which cannot be disclosed and as such, cannot work properly without the required credentials.

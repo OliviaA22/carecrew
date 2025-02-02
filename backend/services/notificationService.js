@@ -79,7 +79,7 @@ class NotificationService {
           patient_id: patient.id,
           medication_item_id: medication.id,
           notification_type: "reminder",
-          message: `Medication "${medication.medication_id}" is due for "${patient.first_name} ${patient.last_name}" at ${medication.scheduled_time}.`,
+          message: `REMINDER: Medication is due for "${patient.first_name} ${patient.last_name}" at ${medication.scheduled_time}.`,
         });
       }
   }

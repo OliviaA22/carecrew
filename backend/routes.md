@@ -72,9 +72,8 @@
 
 | Method | Endpoint | Description |
 |--------|------------|-------------|
-| **GET** | `/api/notifications/` | Get all notifications |
-| **PUT** | `/api/notifications/:id/read` | Mark a notification as read |
-| **DELETE** | `/api/notifications/:id` | Delete a notification |
+| **GET** | `/api/notifications` | Get all notifications |
+| **PUT** | `/api/notifications/:id` | Mark a notification as read |
 
 ---
 
