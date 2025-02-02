@@ -1,5 +1,5 @@
 import Doctor from "../icon/doctor.jpeg";
-import Cart from "../icon/journal.svg";
+import Cart from "../icon/Pill.jpeg";
 import HeartIcon from "../icon/heart.svg";
 import AnnouncementIcon from "../icon/announcement.svg";
 

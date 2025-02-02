@@ -1,64 +1,68 @@
 import React, { useState, useCallback } from "react";
 import AdminHeader from "../../components/ui/layout/adminHeader";
 import Button from "../../hooks/Button";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 import axiosInstance from "../../axios/Axios";
-import { LoginResponse } from "../../data/Types";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, startShift } = useAuth();
   const [error, setError] = useState<string | null>(null);
 
-  const handleLogin = useCallback(async () => {
+  const handleLogin = async () => {
     if (isLoading) return;
 
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await axiosInstance.post<LoginResponse>(
-        "/api/auth/login",
-        { email, password },
-        { timeout: 5000 }
-      );
-
-      console.log("Full response data:", response.data);
+      const response = await axiosInstance.post("/api/auth/login", {
+        email,
+        password,
+      });
+      console.log("Login response:", response.data);
 
       if (response.status === 201 && response.data) {
-        const { user, token } = response.data;
+        const { token, user } = response.data;
 
         if (user && user.role) {
-          login(response.data); // This now matches the updated login function signature
+          console.log("Calling login function");
+          await login({ ...user, token });
+          console.log("Login function completed");
 
-          switch (user.role) {
-            case "admin":
-              navigate("/admindashboard");
-              break;
-            case "nurse":
-              navigate("/nursedashboard");
-              break;
-            default:
-              console.error("Unexpected user role:", user.role);
-              setError(`Unknown user role: ${user.role}`);
+          console.log("User is a nurse, attempting to start shift");
+          try {
+            const shiftResult = await startShift(user);
+            console.log("Shift started successfully:", shiftResult);
+          } catch (shiftError) {
+            console.error("Failed to start shift:", shiftError);
+          }
+
+          // Navigate based on role
+          if (user.role === "admin") {
+            navigate("/admindashboard");
+          } else if (user.role === "nurse") {
+            navigate("/nursedashboard");
+          } else {
+            setError("Unknown user role");
           }
         } else {
-          console.error("Invalid user data structure:", user);
-          setError("Invalid user data structure received from server");
+          setError("Invalid user data received from server");
         }
       } else {
         setError("Unexpected response from server");
       }
-    } catch (error: any) {
-      // ... error handling remains the same
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("An error occurred during login");
     } finally {
       setIsLoading(false);
     }
-  }, [email, password, isLoading, login, navigate]);
+  };
 
   return (
     <div className="h-screen w-full">

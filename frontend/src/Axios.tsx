@@ -4,7 +4,7 @@ import axios, {
   AxiosError,
 } from "axios";
 
-const baseURL = "https://localhost:6000";
+const baseURL = "https://carecrew.onrender.com";
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL,

@@ -7,9 +7,7 @@ const JoinUs: React.FC = () => {
     <div className="px-20 py-20 flex flex-col gap-16">
       <div className="bg-blue-50 flex flex-row items-center justify-between p-8 rounded-2xl">
         <div className="flex flex-col items-center justify-center gap-8">
-          <h1 className="font-semibold text-2xl text-lg">
-            Health Connect is hiring
-          </h1>
+          <h1 className="font-semibold text-2xl text-lg">CareCrew is hiring</h1>
           <span>Work with us to improve healthcare.</span>
           <div className=" px-3 py-1.5 text-blue-500 font-medium border border-blue-500 hover:bg-blue-500 hover:text-white hover:cursor-pointer transition duration-300 rounded-lg">
             JOIN IN

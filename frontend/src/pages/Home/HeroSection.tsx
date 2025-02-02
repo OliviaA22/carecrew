@@ -1,27 +1,36 @@
 import React from "react";
-import { IoSearchOutline } from "react-icons/io5";
-import bgPreview from "@/assets/img/doctors-grid/bg-preview.png";
+import bgPreview from "@/assets/img/doctors-grid/heroNurse.png";
+import sadPreview from "@/assets/img/doctors-grid/overworked-nurse.png";
 
 const HeroSection: React.FC = () => {
   return (
-    <div>
-      <div className="flex flex-row bg-blue-600 h-[470px] rounded-bl-3xl">
-        <div className="pl-20 pl:lgl-32 w-[60%]  h-full flex flex-col gap-9 justify-center">
-          <div className="px-2 flex flex-col text-white font-medium text-3xl inter">
-            Make your nurses
-            <p className="inter semi-bold">happy</p>
-          </div>
-          <div className="bg-white gap-1.5 px-3 flex items-center flex-row rounded-3xl h-14 w-full">
-            <IoSearchOutline size={24} />
-            <input
-              type="text"
-              className="w-full outline-none"
-              placeholder="Name, field of expertise, institution"
-            />
-          </div>
+    <div className="relative bg-blue-600 h-[350px] rounded-bl-3xl shadow-custom">
+      <div className="flex flex-col lg:flex-row h-full px-4 lg:px-12 justify-between items-center">
+        {/* Text Section */}
+        <div className="text-center lg:text-left text-white max-w-sm">
+          <h1 className="text-2xl lg:text-3xl font-bold leading-snug mb-3">
+            Make Your Nurses <span className="text-yellow-300">Happy</span>
+          </h1>
+          <p className="text-sm lg:text-base">
+            Empower your healthcare team with tools that make their work easier
+            and more efficient.
+          </p>
         </div>
-        <div className="w-[40%] flex items-end justify-end">
-          <img src={bgPreview} alt="Preview" className="h-[400px]" />
+
+        {/* Images Section */}
+        <div className="flex flex-row items-center gap-0.5 mt-0.5 lg:mt-0">
+          <img
+            src={sadPreview}
+            alt="Overworked Nurse"
+            className="h-[50px] w-[50px] object-cover rounded-sm"
+            style={{ width: "300px", height: "300px" }}
+          />
+          <img
+            src={bgPreview}
+            alt="Happy Nurse"
+            className="h-[200px] w-[200px] object-cover rounded-sm"
+            style={{ width: "500px", height: "500" }}
+          />
         </div>
       </div>
     </div>

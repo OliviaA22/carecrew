@@ -1,4 +1,5 @@
 export interface User {
+  token: string;
   id: number;
   first_name: string;
   last_name: string;
@@ -12,8 +13,6 @@ export interface User {
   hospital_id: number;
   ward_id: number;
   ward: Ward;
-  createdAt: string;
-  updatedAt: string;
 }
 
 export interface Address {
@@ -27,11 +26,6 @@ export interface Ward {
   id: number;
   hospital_id: number;
   name: string;
-}
-
-export interface LoginResponse {
-  user: User;
-  token: string;
 }
 
 export interface Shift {
@@ -105,29 +99,14 @@ export interface Notification {
   id: number;
   message: string;
   created_at: string;
-  type: string;
-  is_read: boolean;
-}
-
-export interface PatientNotification {
-  id: number;
-  message: string;
-  notification_type: "task" | "reminder" | "alert";
-  is_read: boolean;
-  created_at: string;
-}
-
-export interface Notification {
-  id: number;
-  message: string;
-  created_at: string;
-  notification_type: "task" | "reminder" | "alert";
+  type: "task" | "reminder" | "alert";
   is_read: boolean;
   patient: {
     id: number;
     first_name: string;
     last_name: string;
   };
+  start_time: string;
   medication_item: {
     id: number;
     scheduled_time: string;

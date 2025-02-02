@@ -4,9 +4,15 @@ import axiosInstance from "../../axios/Axios";
 import PageLayout from "../../components/ui/layout/PageLayout";
 
 interface Nurse {
-  name: string;
+  id: number;
+  first_name: string;
+  last_name: string;
   ward_id: number;
-  // Add other properties as needed
+}
+
+interface Patient {
+  id: number;
+  ward_id: number;
 }
 
 interface Ward {
@@ -17,10 +23,6 @@ interface Ward {
 }
 
 const Dashboard: React.FC = () => {
-  const [userData, setUserData] = useState<{
-    totalUsers: number;
-    newUsers: number;
-  } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [wardData, setWardData] = useState<Ward[]>([]);
@@ -30,13 +32,16 @@ const Dashboard: React.FC = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [wardsResponse, nursesResponse] = await Promise.all([
-        axiosInstance.get("/api/search/wards"),
-        axiosInstance.get("/api/users/nurses"),
-      ]);
+      const [wardsResponse, nursesResponse, patientsResponse] =
+        await Promise.all([
+          axiosInstance.get("/api/search/wards"),
+          axiosInstance.get("/api/users/"),
+          axiosInstance.get("/api/patients/"),
+        ]);
 
       console.log("Wards data:", wardsResponse.data);
       console.log("Nurses data:", nursesResponse.data);
+      console.log("Patients data:", patientsResponse.data);
 
       if (!wardsResponse.data) {
         throw new Error("No ward data received from the server");
@@ -44,7 +49,8 @@ const Dashboard: React.FC = () => {
 
       const processedWardData = processWardData(
         wardsResponse.data,
-        nursesResponse.data || []
+        nursesResponse.data || [],
+        patientsResponse.data || []
       );
       setWardData(processedWardData);
     } catch (error) {
@@ -59,18 +65,44 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const processWardData = (wards: any[], nurses: any[] = []): Ward[] => {
+  const processWardData = (
+    wards: any[],
+    nurses: any[] = [],
+    patients: any[] = []
+  ): Ward[] => {
     if (!Array.isArray(wards)) {
       console.error("Invalid ward data format received:", wards);
       return [];
     }
 
+    const nursesByWard = nurses.reduce((acc, nurse) => {
+      if (nurse.role === "nurse" && nurse.ward_id) {
+        if (!acc[nurse.ward_id]) {
+          acc[nurse.ward_id] = [];
+        }
+        acc[nurse.ward_id].push({
+          id: nurse.id,
+          first_name: nurse.first_name,
+          last_name: nurse.last_name,
+          ward_id: nurse.ward_id,
+        });
+      }
+      return acc;
+    }, {});
+
+    const patientCountByWard = patients.reduce((acc, patient) => {
+      if (patient.ward_id) {
+        acc[patient.ward_id] = (acc[patient.ward_id] || 0) + 1;
+      }
+      return acc;
+    }, {});
+
     return wards.map((ward) => ({
       id: ward.id,
       name: ward.name,
       hospital_id: ward.hospital_id,
-      patientCount: 0, // We'll need to calculate this separately if it's not provided
-      nurses: nurses.filter((nurse) => nurse.ward_id === ward.id),
+      patientCount: patientCountByWard[ward.id] || 0,
+      nurses: nursesByWard[ward.id] || [],
     }));
   };
 
@@ -103,7 +135,9 @@ const Dashboard: React.FC = () => {
                   <td className="border px-4 py-2">{ward.name}</td>
                   <td className="border px-4 py-2">{ward.patientCount}</td>
                   <td className="border px-4 py-2">
-                    {ward.nurses.map((nurse) => nurse.name).join(", ")}
+                    {ward.nurses
+                      .map((nurse) => `${nurse.first_name} ${nurse.last_name}`)
+                      .join(", ")}
                   </td>
                 </tr>
               ))}

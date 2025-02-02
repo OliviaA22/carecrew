@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import bgPreview from "@/assets/icon/LOGO.png";
 
 const Header: React.FC = () => {
   const [help, setHelp] = useState<boolean>(false);
@@ -16,7 +17,12 @@ const Header: React.FC = () => {
           to="/"
           className="z-10 flex flex-row items-center inter text-white font-medium text-2xl"
         >
-          <img src="../../assets/icon/LOGO.png" alt="image" />
+          <img
+            src={bgPreview}
+            alt="Icon"
+            style={{ height: "50px", width: "auto" }}
+            className="z-10"
+          />
         </Link>
         {help && (
           <div
@@ -80,7 +86,7 @@ const Help: React.FC = () => {
                 to="/sign-up"
                 className="hover:underline transition duration-200 ease-in-out"
               >
-                Create a Health Connect account
+                Create a CareCrew account
               </Link>
               <span>How can I make an appointment?</span>
               <span>Share a document with my doctor</span>

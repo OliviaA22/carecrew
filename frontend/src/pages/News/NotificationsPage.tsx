@@ -1,184 +1,117 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../../pages/LogIn/AuthContext";
 import PageLayout from "../../components/ui/layout/PageLayout";
-import axios from "axios";
-import axiosInstance from "../../axios/Axios";
 import { useNotifications } from "../../hooks/Notifications/NotificationProvider";
-
-interface Notification {
-  id: number;
-  message: string;
-  created_at: string;
-  type: string;
-  is_read: boolean;
-}
-
-interface Shift {
-  id: number;
-  start_time: string;
-  end_time: string;
-  user: {
-    first_name: string;
-    last_name: string;
-  };
-}
-
-type TimelineItem = Notification | Shift;
+import { Notification } from "../../data/Types";
+import { useNavigate } from "react-router-dom";
 
 const NotificationsPage: React.FC = () => {
-  const [timelineItems, setTimelineItems] = useState<TimelineItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { userData } = useAuth();
   const { notifications, markAsRead } = useNotifications();
+  const navigate = useNavigate();
 
-  const getItemTimestamp = (item: TimelineItem): string => {
-    if ("created_at" in item) {
-      return item.created_at;
-    } else if ("start_time" in item) {
-      return item.start_time;
+  const safeParseDate = (dateString: string): Date => {
+    const parsedDate = new Date(dateString);
+    return isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
+  };
+
+  const handleMarkAsRead = async (id: number) => {
+    try {
+      await markAsRead(id);
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
     }
-    return "";
+  };
+
+  const handleDetailsClick = (notification: Notification) => {
+    navigate(`/details/${notification.patient.id}`);
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          throw new Error("No authentication token found");
-        }
+    setLoading(false);
+  }, [notifications]);
 
-        const [notificationsResponse, shiftsResponse] = await Promise.all([
-          axiosInstance.get<Notification[]>("/api/notifications/ward", {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axiosInstance.get<Shift[]>("/api/shifts", {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
-
-        const notifications = notificationsResponse.data;
-        const shifts = shiftsResponse.data;
-
-        const combinedItems = [...notifications, ...shifts].sort((a, b) => {
-          const timestampA = getItemTimestamp(a);
-          const timestampB = getItemTimestamp(b);
-          return (
-            new Date(timestampB).getTime() - new Date(timestampA).getTime()
-          );
-        });
-
-        setTimelineItems(combinedItems);
-      } catch (err) {
-        if (axios.isAxiosError(err)) {
-          setError(
-            `Failed to fetch data: ${
-              err.response?.data?.message || err.message
-            }`
-          );
-        } else {
-          setError("An unexpected error occurred");
-        }
-        console.error("Error fetching data:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  const getItemIcon = (item: TimelineItem): string => {
-    if ("type" in item) {
-      switch (item.type) {
-        case "medication":
-          return "💊";
-        case "patient":
-          return "🏥";
-        case "alert":
-          return "🚨";
-        default:
-          return "📢";
-      }
-    } else {
-      return "👤";
+  const getItemIcon = (item: Notification): string => {
+    switch (item.type) {
+      case "reminder":
+        return "💊";
+      case "alert":
+        return "🚨";
+      default:
+        return "📢";
     }
   };
 
-  const renderTimelineItem = (item: TimelineItem) => {
-    if ("type" in item) {
-      return (
-        <li
-          key={item.id}
-          className={`p-4 hover:bg-gray-50 transition-colors duration-150 ease-in-out ${
-            item.is_read ? "bg-gray-50" : "bg-white"
-          }`}
+  const renderNotificationItem = (
+    notification: Notification,
+    index: number,
+    array: Notification[]
+  ) => {
+    const isLastItem = index === array.length - 1;
+    const isUnread = !notification.is_read;
+
+    return (
+      <li
+        key={notification.id}
+        className={`${!isLastItem ? "border-b border-gray-200" : ""} ${
+          isUnread ? "bg-blue-50" : ""
+        }`}
+      >
+        <div
+          onClick={() => handleDetailsClick(notification)}
+          className="p-4 hover:bg-gray-100 transition-colors duration-150 ease-in-out cursor-pointer"
         >
-          <div className="flex items-center space-x-4">
-            <div className="flex-shrink-0 text-2xl">{getItemIcon(item)}</div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">
-                {item.message}
-              </p>
-              <p className="text-sm text-gray-500">
-                {new Date(item.created_at).toLocaleString()}
-              </p>
-            </div>
-            {!item.is_read && (
-              <div className="inline-flex items-center text-sm font-semibold text-indigo-600">
-                New
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="flex-shrink-0 text-2xl">
+                {getItemIcon(notification)}
               </div>
-            )}
-          </div>
-          {!item.is_read && (
-            <button onClick={() => markAsRead(item.id)}>Mark as Read</button>
-          )}
-        </li>
-      );
-    } else {
-      return (
-        <li
-          key={item.id}
-          className="p-4 hover:bg-gray-50 transition-colors duration-150 ease-in-out bg-white"
-        >
-          <div className="flex items-center space-x-4">
-            <div className="flex-shrink-0 text-2xl">{getItemIcon(item)}</div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">
-                {item.user
-                  ? `${item.user.first_name} ${item.user.last_name}'s shift`
-                  : "Unknown user's shift"}
-              </p>
-              <p className="text-sm text-gray-500">
-                {`${new Date(item.start_time).toLocaleString()} - ${new Date(
-                  item.end_time
-                ).toLocaleString()}`}
-              </p>
+              <div className="flex-1 min-w-0">
+                <p
+                  className={`text-sm font-medium ${
+                    isUnread ? "text-blue-700 font-bold" : "text-gray-900"
+                  } truncate`}
+                >
+                  {notification.message}
+                </p>
+                <p className="text-sm text-gray-500">
+                  {safeParseDate(notification.created_at).toLocaleString()}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center">
+              {isUnread && (
+                <button
+                  onClick={() => handleMarkAsRead(notification.id)}
+                  className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-150 ease-in-out"
+                >
+                  Mark as Read
+                </button>
+              )}
             </div>
           </div>
-        </li>
-      );
-    }
+        </div>
+      </li>
+    );
   };
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <PageLayout text="Notifications & Shifts">
+    <PageLayout text="Notifications">
       <div className="p-6 space-y-6">
-        <h1 className="text-2xl font-semibold">Ward Timeline</h1>
+        <h1 className="text-2xl font-semibold">Notifications</h1>
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
-          {timelineItems.length === 0 ? (
+          {notifications.length === 0 ? (
             <p className="p-4 text-gray-500">
-              No items to display at this time.
+              No notifications to display at this time.
             </p>
           ) : (
-            <ul className="divide-y divide-gray-200">
-              {timelineItems.map(renderTimelineItem)}
+            <ul>
+              {notifications.map((notification, index, array) =>
+                renderNotificationItem(notification, index, array)
+              )}
             </ul>
           )}
         </div>

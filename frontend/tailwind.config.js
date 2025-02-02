@@ -24,12 +24,23 @@ export default {
         'poppins-bold': ['Poppins', 'sans-serif', '700'],
       },
       colors: {
+        customGray: {
+          500: '#4A5568',  // A dark gray color
+          600: '#2D3748',  // An even darker shade for hover
+          700: '#1A202C'   // Darkest shade for additional variation
+        },
         borderc: 'rgba(178, 178, 178, 1);',
+        emerald: {
+          400: '#34d399',
+          500: '#10b981',
+          600: '#059669',
+        },
       },
       boxShadow: {
         custom: '0px 0px 20px 0px #1A31501A',
         customWhite: '0px 2px 6px 0px #FFFFFF40',
         customShadow: '0px 5px 10px 0px #1A31500D',
+        md: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
       },
       zIndex: {
         1: '1',
@@ -45,6 +56,8 @@ export default {
   variants: {
     extend: {
       display: ['group-hover'],
+      opacity: ['group-hover'],
+      scale: ['group-hover'],
     }
   },
   plugins: [],
