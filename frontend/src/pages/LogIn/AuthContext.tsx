@@ -58,17 +58,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const startShift = async (userData: User): Promise<Shift> => {
-    console.log("startShift called, userData:", userData);
     if (!userData) {
       console.error("startShift: User data not provided");
       throw new Error("User data not provided");
     }
 
     try {
-      console.log("Checking for active shift...");
       const activeShift = await checkActiveShift(userData.id);
       if (activeShift) {
-        console.log("Active shift found:", activeShift);
         setCurrentShift(activeShift);
         return activeShift;
       }
@@ -77,7 +74,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         nurse_id: userData.id,
         notes: "",
       });
-      console.log("New shift response:", response.data);
 
       const newShift: Shift = {
         id: response.data.id,
@@ -93,7 +89,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       };
 
       setCurrentShift(newShift);
-      console.log("New shift started:", newShift);
       return newShift;
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -153,7 +148,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUserData(data);
     setIsAuthenticated(true);
     localStorage.setItem("authToken", data.token);
-    console.log("Authentication completed, user data set");
   };
 
   const logout = async () => {

@@ -17,14 +17,6 @@ const EditNurseModal: React.FC<EditNurseModalProps> = ({
   onUpdateSuccess,
   nurseId,
 }) => {
-  console.log("EditNurseModal rendered", { isOpen, nurseId });
-
-  if (!isOpen) {
-    console.log("EditNurseModal not open");
-    return null;
-  }
-
-  console.log("EditNurseModal is open and rendering content");
   const [initialData, setInitialData] = useState<NurseFormData | null>(null);
 
   useEffect(() => {

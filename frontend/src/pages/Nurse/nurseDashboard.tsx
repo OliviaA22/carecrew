@@ -68,9 +68,6 @@ const NurseDashboard: React.FC = () => {
         reason: administrationReason,
       });
 
-      console.log(
-        `Medication ${selectedMedication.medication.name} ${administrationStatus}. Reason: ${administrationReason}`
-      );
       // Here you would typically update the medication status in your state or refetch the data
     } catch (error) {
       console.error("Error creating medication administration:", error);

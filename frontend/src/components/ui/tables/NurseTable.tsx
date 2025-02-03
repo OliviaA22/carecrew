@@ -23,13 +23,11 @@ const NurseTable: React.FC<NurseTableProps> = ({
   const [selectedNurse, setSelectedNurse] = useState<User | null>(null);
 
   const handleEdit = (nurse: User) => {
-    console.log("Edit button clicked", nurse);
     setSelectedNurse(nurse);
     setIsEditModalOpen(true);
   };
 
   const handleEditModalClose = () => {
-    console.log("Closing edit modal");
     setIsEditModalOpen(false);
     setSelectedNurse(null);
     onRefresh();

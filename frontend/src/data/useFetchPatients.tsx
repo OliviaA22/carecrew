@@ -12,7 +12,6 @@ const useFetchPatients = (userData: User | null) => {
       try {
         if (userData?.ward_id) {
           const response = await axiosInstance.get(`/api/search/dashboard`);
-          console.log("Dashboard response:", response.data);
 
           const patientsData = response.data.assignedPatients || [];
           setPatients(patientsData);

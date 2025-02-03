@@ -10,9 +10,7 @@ class NotificationService {
   async createNotification(data) {
     try {
       await Notification.create({ ...data, is_read: false });
-      console.log(
-        `Notification created for medication ID: ${data.medication_item_id}`
-      );
+      
     } catch (error) {
       console.error(`Error creating notification: ${error.message}`);
     }
@@ -48,7 +46,6 @@ class NotificationService {
   }
 
   async processDueMedications() {
-    console.log("Checking for due medication notifications...");
       const dueMedications = await this.fetchDueMedications();
       if (dueMedications.length === 0) {
         console.log("No due medications at this time.");

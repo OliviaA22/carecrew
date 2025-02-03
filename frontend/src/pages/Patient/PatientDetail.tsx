@@ -2,12 +2,7 @@ import React, { useState, useEffect } from "react";
 import PageLayout from "../../components/ui/layout/PageLayout";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../axios/Axios";
-import {
-  MedicationPlan,
-  MedicationItem,
-  Patient,
-  PatientNotification,
-} from "../../data/Types";
+import { MedicationPlan, MedicationItem, Patient } from "../../data/Types";
 import MedicationSchedule from "../../components/ui/tables/MedicationSchedule";
 import MedicationHistory from "../../components/ui/tables/MedicationHistory";
 
@@ -16,7 +11,6 @@ const PatientDetails: React.FC = () => {
   const [patient, setPatient] = useState<Patient | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [notifications, setNotifications] = useState<PatientNotification[]>([]);
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
     return date.toLocaleDateString("de-DE", {

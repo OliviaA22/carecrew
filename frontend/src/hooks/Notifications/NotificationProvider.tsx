@@ -34,7 +34,6 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
       const response = await axiosInstance.get<Notification[]>(
         "/api/notifications/ward"
       );
-      console.log(response.data);
       setNotifications(response.data);
     } catch (error) {
       console.error("Error fetching notifications:", error);
@@ -43,7 +42,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
 
   useEffect(() => {
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 5 * 60 * 1000); // Check every 30 seconds
+    const interval = setInterval(fetchNotifications, 2 * 60 * 1000); // Check every 30 seconds
     return () => clearInterval(interval);
   }, []);
 

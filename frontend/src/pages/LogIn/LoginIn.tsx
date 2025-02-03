@@ -24,20 +24,14 @@ const SignIn = () => {
         email,
         password,
       });
-      console.log("Login response:", response.data);
 
       if (response.status === 201 && response.data) {
         const { token, user } = response.data;
 
         if (user && user.role) {
-          console.log("Calling login function");
           await login({ ...user, token });
-          console.log("Login function completed");
-
-          console.log("User is a nurse, attempting to start shift");
           try {
             const shiftResult = await startShift(user);
-            console.log("Shift started successfully:", shiftResult);
           } catch (shiftError) {
             console.error("Failed to start shift:", shiftError);
           }

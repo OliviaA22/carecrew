@@ -1,7 +1,28 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import bgPreview from "@/assets/icon/LOGO.png";
+
+const Help: React.FC = () => {
+  return (
+    <motion.div
+      key="help-modal"
+      initial={{ opacity: 0, scale: 0.2 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.2 }}
+      transition={{
+        duration: 0.6,
+        ease: [0, 0.71, 0.2, 1.01],
+      }}
+      className="absolute h-40 z-3"
+    >
+      <div className="w-[320px] p-4 ml-[-200px] mt-[120px] rounded-lg bg-white">
+        <h3>Help Center</h3>
+        <p>This is where you can add your help content.</p>
+      </div>
+    </motion.div>
+  );
+};
 
 const Header: React.FC = () => {
   const [help, setHelp] = useState<boolean>(false);
@@ -59,42 +80,3 @@ const Header: React.FC = () => {
 };
 
 export default Header;
-
-const Help: React.FC = () => {
-  return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0, scale: 0.2 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{
-          duration: 0.6,
-          ease: [0, 0.71, 0.2, 1.01],
-        }}
-        exit={{ opacity: 0, scale: 0.2 }}
-        className="absolute h-40 z-3"
-      >
-        <div className="w-[320px] p-4 ml-[-200px] mt-[120px] rounded-lg bg-white">
-          <div className="flex flex-col gap-3">
-            <div className="flex flex-row gap-1 items-center">
-              <div className="rounded-full flex items-center border-black justify-center w-4 h-4 border-2">
-                <div className="text-[12px] text-black font-bold">?</div>
-              </div>
-              <h1 className="font-medium">Frequently Asked Questions</h1>
-            </div>
-            <div className="flex flex-col gap-1">
-              <Link
-                to="/sign-up"
-                className="hover:underline transition duration-200 ease-in-out"
-              >
-                Create a CareCrew account
-              </Link>
-              <span>How can I make an appointment?</span>
-              <span>Share a document with my doctor</span>
-            </div>
-            <div className="text-blue-400">Visit Help Center</div>
-          </div>
-        </div>
-      </motion.div>
-    </AnimatePresence>
-  );
-};

@@ -39,10 +39,6 @@ const Dashboard: React.FC = () => {
           axiosInstance.get("/api/patients/"),
         ]);
 
-      console.log("Wards data:", wardsResponse.data);
-      console.log("Nurses data:", nursesResponse.data);
-      console.log("Patients data:", patientsResponse.data);
-
       if (!wardsResponse.data) {
         throw new Error("No ward data received from the server");
       }
