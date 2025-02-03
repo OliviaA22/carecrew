@@ -86,13 +86,17 @@ CareCrew leverages a **scalable and efficient technology stack** to provide a **
     npm install vite@latest --save-dev
     ```
 
-    To open the frontend in developer mode do `npx vite` from the frontend directory and the page opens automatically. otherwise, run `npm start`
-    The admin access to the website is email `olivia.okoro@mail.com` and password: `securePassword123`
+The application is publicly accessible via `https://carecrew-medassist.netlify.app`
 
-4. **Set up environment variables:**
-   - The backend uses some APIs and variables which cannot be disclosed and as such, cannot work properly without the required credentials.
+To open the frontend in developer mode run `npm run dev` from the frontend directory
+   The admin access to the website is: email `olivia.okoro@mail.com` and password: `securePassword123`
+   The nurse 1 access to the website is: email `max.schneider@example.com` and password: `securePassword456`
+   The nurse 2 access to the website is: email `robert.scott@nurse.com` and password: `securePassword123`
 
-5. **Run the backend server:**
+5. **Set up environment variables:**
+   - The backend uses some APIs and variables that cannot be disclosed and cannot work properly without the required credentials.
+
+6. **Run the backend server:**
 
    ```bash
    cd backend
@@ -100,4 +104,4 @@ CareCrew leverages a **scalable and efficient technology stack** to provide a **
    npm start (production)
    ```
 
-CareCrew aims to revolutionize hospital workflows by enhancing nurse efficiency, reducing medication error, improving documentation process, and ensuring safe medication administration. 🚀
+CareCrew aims to revolutionize hospital workflows by enhancing nurse efficiency, reducing medication errors, improving documentation, and ensuring safe medication administration. 🚀
