@@ -105,3 +105,5 @@ To open the frontend in developer mode run `npm run dev` from the frontend direc
    ```
 
 CareCrew aims to revolutionize hospital workflows by enhancing nurse efficiency, reducing medication errors, improving documentation, and ensuring safe medication administration.
+
+
