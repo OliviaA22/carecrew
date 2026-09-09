@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const isAiven = process.env.DB_PROVIDER === "aiven";
 
 const config = {
   HOST: process.env.DB_HOST || "localhost",
@@ -19,10 +20,19 @@ const config = {
 };
 
 // Check if running in Docker environment
-if (process.env.DOCKER_ENV === "true") {
+if (isAiven) {
+  config.dialectOptions = {
+    ssl: {
+      rejectUnauthorized: true,
+      ca: fs.readFileSync(
+        path.resolve(__dirname, "./ca.pem")
+      ),
+    },
+  };
+} else if(process.env.DOCKER_ENV === "true") {
   // Docker environment: Disable SSL
   config.dialectOptions = {
-    ssl: null,
+    ssl: false,
   };
 } else {
   // Local environment: Use SSL with CA certificate
