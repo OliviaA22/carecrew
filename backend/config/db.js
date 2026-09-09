@@ -1,16 +1,16 @@
 const fs = require("fs");
 const path = require("path");
+
 const isAiven = process.env.DB_PROVIDER === "aiven";
 
 const config = {
   HOST: process.env.DB_HOST || "localhost",
+  PORT: Number(process.env.DB_PORT || 3306),
   USER: process.env.DB_USER || "root",
   PASSWORD: process.env.DB_PASSWORD || "",
   DB: process.env.DB_NAME || "carecrew",
-  // This part 'process.env.DB_PASSWORD || ' from the line above should be
-  // commented or removed when running the app on local machine(no docker)
-  // using xammp...
   dialect: "mysql",
+
   pool: {
     max: 5,
     min: 0,
@@ -19,29 +19,23 @@ const config = {
   },
 };
 
-// Check if running in Docker environment
 if (isAiven) {
   config.dialectOptions = {
+    connectTimeout: 60000,
     ssl: {
       rejectUnauthorized: true,
-      ca: fs.readFileSync(
-        path.resolve(__dirname, "./ca.pem")
-      ),
+
+      // Render: CA certificate stored as a secret environment variable.
+      // Local Mac: CA certificate loaded from a local file.
+      ca: process.env.DB_SSL_CA
+        ? process.env.DB_SSL_CA
+        : fs.readFileSync(path.resolve(__dirname, "./ca.pem")),
     },
-  };
-} else if(process.env.DOCKER_ENV === "true") {
-  // Docker environment: Disable SSL
-  config.dialectOptions = {
-    ssl: false,
   };
 } else {
-  // Local environment: Use SSL with CA certificate
+  // Local MySQL / Docker MySQL
   config.dialectOptions = {
-    ssl: {
-      ca: fs.readFileSync(
-        path.resolve(__dirname, "./DigiCertGlobalRootCA.crt.pem")
-      ),
-    },
+    ssl: false,
   };
 }
 
